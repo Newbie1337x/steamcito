@@ -12,11 +12,18 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3800.47" />
     <PackageReference Include="Refit" Version="10.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\" />
-    <Folder Include="Models\" />
+    <Folder Include="Assets\Resources\CreamApi\" />
+    <Folder Include="Assets\Resources\Goldberg\" />
+    <Folder Include="Assets\Resources\Koaloader\" />
+    <Folder Include="Assets\Resources\ScreamApi\" />
+    <Folder Include="Assets\Resources\SmokeApi\" />
+    <Folder Include="Assets\Resources\UplayR1\" />
+    <Folder Include="Assets\Resources\UplayR2\" />
   </ItemGroup>
 
 </Project>
