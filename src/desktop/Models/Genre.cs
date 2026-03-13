@@ -1,12 +1,7 @@
 ﻿namespace steamcito.Models;
 
-public class Genre
+public class Genre(string name)
 {
-    public Genre(string name)
-    {
-        Name = name;
-    }
-
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = name;
 }

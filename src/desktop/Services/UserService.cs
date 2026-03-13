@@ -5,9 +5,9 @@ namespace steamcito.Services;
 
 public class UserService
 {
-    private readonly AppDbContext _context;
+    private readonly AppDBContext _context;
     
-    public UserService(AppDbContext context)
+    public UserService(AppDBContext context)
     {
         _context = context;
     }
