@@ -19,7 +19,6 @@ public class GameService
         };
 
         db.Games.Add(nuevoJuego);
-        db.SaveChanges();
         
         var gamePaths = new GamePaths
         {

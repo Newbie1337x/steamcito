@@ -13,6 +13,7 @@ public class GameDetails
     
     public string? SteamId { get; set; }
     public string? IgdbId { get; set; }
+    [NotMapped]
     public List<Genre> Genres { get; set; } = new();
     public bool Favorite { get; set; }
     public string? Title { get; set; }

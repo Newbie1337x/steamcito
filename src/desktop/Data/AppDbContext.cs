@@ -5,6 +5,10 @@ namespace steamcito.Data;
 
 public class AppDBContext : DbContext
 {
+    public AppDBContext()
+    {
+        Database.EnsureCreated();
+    }
    
     public DbSet<Game> Games { get; set; }
     public DbSet<GamePaths> GamePaths { get; set; }
@@ -25,6 +29,13 @@ public class AppDBContext : DbContext
             .HasForeignKey<GamePaths>(gp => gp.GameId);
         
         modelBuilder.Entity<Game>().OwnsOne(g => g.Details);
-        modelBuilder.Entity<Game>().OwnsOne(g => g.Artworks);
+        modelBuilder.Entity<Game>().OwnsOne(g => g.Artworks, a =>
+        {
+            a.Property(x => x.Hero).IsRequired(false);
+            a.Property(x => x.Grid).IsRequired(false);
+            a.Property(x => x.Logo).IsRequired(false);
+            a.Property(x => x.Icon).IsRequired(false);
+        });
     }
+ 
 }
