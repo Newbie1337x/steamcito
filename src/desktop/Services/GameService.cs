@@ -23,8 +23,7 @@ public class GameService
         
         var gamePaths = new GamePaths
         {
-            Id = Guid.NewGuid().ToString(),
-            GameId = nuevoJuego.Id.ToString(),
+            GameId = nuevoJuego.Id,
             Game = nuevoJuego,
             FolderPath = folderPath,
             ExePath = exePath

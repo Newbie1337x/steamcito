@@ -1,8 +1,16 @@
-﻿namespace steamcito.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace steamcito.Models;
 
 public class GameDetails
 {
 
+    public int? Id { get; set; }
+    [ForeignKey("GameId")]
+    public Game Game { get; set; }
+    
+    public int GameId { get; set; }
+    
     public string? SteamId { get; set; }
     public string? IgdbId { get; set; }
     public List<Genre> Genres { get; set; } = new();

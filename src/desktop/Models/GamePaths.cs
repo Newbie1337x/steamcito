@@ -7,8 +7,8 @@ namespace steamcito.Models;
 public class GamePaths
 {
     [Key]
-    public string Id { get; set; }
-    public required string GameId { get; set; }
+    public int Id { get; set; }
+    public int GameId { get; set; }
     [ForeignKey("GameId")]
     public required Game Game { get; set; }
     public required string ExePath { get; set; }
