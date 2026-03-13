@@ -9,6 +9,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using System.Windows;
+using steamcito.ViewModels;
+
 namespace steamcito.Views
 {
     /// <summary>
@@ -19,6 +22,7 @@ namespace steamcito.Views
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowModel();
         }
     }
 }

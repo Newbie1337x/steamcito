@@ -1,6 +1,8 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Windows;
+using Microsoft.EntityFrameworkCore;
+using steamcito.Data;
 
 namespace steamcito
 {
@@ -9,6 +11,6 @@ namespace steamcito
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        
     }
-
 }
