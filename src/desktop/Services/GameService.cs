@@ -28,8 +28,17 @@ public class GameService
             ExePath = exePath
         };
         
+        var artwork = new Artwork
+        {
+            GameId = nuevoJuego.Id,
+            Game = nuevoJuego
+        };
+        
         nuevoJuego.GamePaths = gamePaths;
+        nuevoJuego.Artworks = artwork;
+        
         db.GamePaths.Add(gamePaths);
+        db.Artworks.Add(artwork);
         db.SaveChanges();
         return nuevoJuego;
     }

@@ -10,7 +10,7 @@ public class GamePaths
     public int Id { get; set; }
     public int GameId { get; set; }
     [ForeignKey("GameId")]
-    public required Game Game { get; set; }
+    public Game? Game { get; set; }
     public required string ExePath { get; set; }
     public string? LauncherPath { get; set; }
     public required string FolderPath { get; set; }

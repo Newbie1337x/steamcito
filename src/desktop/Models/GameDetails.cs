@@ -1,15 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace steamcito.Models;
 
+[Table("gamedetails")]
 public class GameDetails
 {
+    [Key]
+    public int Id { get; set; }
 
-    public int? Id { get; set; }
-    [ForeignKey("GameId")]
-    public Game Game { get; set; }
-    
     public int GameId { get; set; }
+    
+    [ForeignKey("GameId")]
+    public Game? Game { get; set; }
     
     public string? SteamId { get; set; }
     public string? IgdbId { get; set; }
