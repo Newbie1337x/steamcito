@@ -3,7 +3,10 @@ using steamcito.Data;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using IWshRuntimeLibrary;
 using Microsoft.EntityFrameworkCore;
+using File = System.IO.File;
+
 namespace steamcito.Services;
 
 public class GameService
@@ -24,7 +27,6 @@ public class GameService
             UseShellExecute = true,
             WorkingDirectory = Path.GetDirectoryName(exePath)
         });
-        
         //Aplicar para juegos de steam
        /* Process.Start(new ProcessStartInfo
         {
@@ -32,6 +34,37 @@ public class GameService
             UseShellExecute = true
         });
     */
+    }
+
+    public void RemoveGame(Game game)
+    {
+        _context.Games.Remove(game);
+        _context.SaveChanges();
+    }
+
+    public void CreateShortcut(GamePaths gamePaths, string name)
+    {
+        var exePath = gamePaths.ExePath;
+        
+        if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
+            return;
+        
+        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+        // name of shortcut
+        string shortcutName = name + ".lnk";
+        string shortcutPath = Path.Combine(desktopPath, shortcutName);
+        
+        //Create shortcut
+        var shell = new WshShell();
+        IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
+
+        shortcut.TargetPath = exePath;
+        shortcut.WorkingDirectory = Path.GetDirectoryName(exePath);
+        shortcut.Description = "Launch game";
+        shortcut.IconLocation = exePath;
+
+        shortcut.Save();
     }
 
     public List<Game> GetAll() => _context.Games
@@ -74,5 +107,11 @@ public class GameService
         _context.Games.Add(game);
         _context.SaveChanges();
         return game;
+    }
+    
+    public void Update(Game game)
+    {
+        _context.Games.Update(game);
+        _context.SaveChanges();
     }
 }

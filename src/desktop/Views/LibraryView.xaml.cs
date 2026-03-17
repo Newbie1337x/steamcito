@@ -1,29 +1,22 @@
-﻿using steamcito.ViewModels;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.ComponentModel;
+using steamcito.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace steamcito.Views
 {
     /// <summary>
     /// Lógica de interacción para LibraryView.xaml
     /// </summary>
-    public partial class LibraryView : System.Windows.Controls.UserControl
+    public partial class LibraryView
     {
         public LibraryView()
         {
             InitializeComponent();
-            DataContext = new LibraryViewModel();
-        }
-
-        private void PlayButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is LibraryViewModel vm)
+            if (!DesignerProperties.GetIsInDesignMode(this) && App.ServiceProvider != null)
             {
-                vm.RunGameCommand.Execute(null);
+                DataContext = App.ServiceProvider.GetRequiredService<LibraryViewModel>();
             }
         }
-
-     
     }
 }
 

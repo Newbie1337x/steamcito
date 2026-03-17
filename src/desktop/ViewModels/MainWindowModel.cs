@@ -2,16 +2,17 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using steamcito.Services;
-using System.Windows.Forms;
+using steamcito.Models;
+
 namespace steamcito.ViewModels;
 
 public partial class MainWindowModel : ObservableObject
 {
     private readonly GameService _gameService;
 
-    public MainWindowModel()
+    public MainWindowModel(GameService gameService)
     {
-        _gameService = new GameService(new steamcito.Data.AppDBContext());
+        _gameService = gameService;
     }
 
     [RelayCommand]
@@ -56,4 +57,4 @@ public partial class MainWindowModel : ObservableObject
     }
 }
 
-public record GameAddedMessage(steamcito.Models.Game Game);
+public record GameAddedMessage(Game Game);

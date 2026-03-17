@@ -2,20 +2,22 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using steamcito.ViewModels;
 namespace steamcito.Views
 {
     public partial class MainWindow : Window
     {
-        MainWindowModel mainWindowModel;
+        MainWindowModel _mainWindowModel;
 
         public MainWindow()
         {
             InitializeComponent();
-            mainWindowModel = new MainWindowModel();
+            _mainWindowModel = App.ServiceProvider?.GetRequiredService<MainWindowModel>() 
+                              ?? throw new InvalidOperationException("ServiceProvider is not initialized");
             LibraryViewControl.Visibility = Visibility.Visible;
             SettingsViewControl.Visibility = Visibility.Collapsed;
-            DataContext = mainWindowModel;
+            DataContext = _mainWindowModel;
             StateChanged += MainWindow_StateChanged;
             SourceInitialized += MainWindow_SourceInitialized;
             StateChanged += MainWindow_StateChanged;
@@ -95,7 +97,7 @@ namespace steamcito.Views
 
         private void AddProduct_Click(object sender, RoutedEventArgs e)
         {
-            mainWindowModel.AddGameCommand.Execute(null);
+            _mainWindowModel.AddGameCommand.Execute(null);
         }
 
         private void LibraryButton_Click(object sender, RoutedEventArgs e)

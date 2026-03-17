@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace steamcito.Models;
 
 [Table("gamedetails")]
-public class GameDetails
+public partial class GameDetails
 {
     [Key]
     public int Id { get; set; }
@@ -16,7 +17,10 @@ public class GameDetails
     public string? SteamId { get; set; }
     public string? IgdbId { get; set; }
     public List<Genre> Genres { get; set; } = new();
-    public bool Favorite { get; set; }
+    
+
+    public bool Favorite { get; set; } = false;
+
     public string? Title { get; set; }
     public string? Description { get; set; }
     public DateTime? ReleaseDate { get; set; }

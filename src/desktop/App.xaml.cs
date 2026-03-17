@@ -2,7 +2,10 @@
 using System.Data;
 using System.Windows;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using steamcito.Data;
+using steamcito.Services;
+using steamcito.ViewModels;
 
 namespace steamcito
 {
@@ -11,6 +14,34 @@ namespace steamcito
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        
+        public static IServiceProvider? ServiceProvider { get; private set; }
+
+        public App()
+        {
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            ServiceProvider = services.BuildServiceProvider();
+            
+            // Database initialization
+            using (var scope = ServiceProvider.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+                context.Database.EnsureCreated();
+            }
+        }
+
+        private void ConfigureServices(IServiceCollection services)
+        {
+            // Database
+            services.AddDbContext<AppDBContext>(options =>
+                options.UseSqlite("Data Source=library_games.db"));
+
+            // Services
+            services.AddSingleton<GameService>();
+
+            // ViewModels
+            services.AddTransient<MainWindowModel>();
+            services.AddTransient<LibraryViewModel>();
+        }
     }
 }
