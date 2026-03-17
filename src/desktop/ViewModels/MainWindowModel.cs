@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using steamcito.Services;
 using System.Windows.Forms;
 namespace steamcito.ViewModels;
@@ -48,12 +47,6 @@ public partial class MainWindowModel : ObservableObject
             return;
         }
 
-        string gameTitle = System.IO.Path.GetFileNameWithoutExtension(exePath);
-        var nuevoJuego = _gameService.SaveNewGame(gameTitle, folderPath, exePath);
-        
-        // Notificar que se agregó un juego
-        WeakReferenceMessenger.Default.Send(new GameAddedMessage(nuevoJuego));
+        var nuevoJuego = _gameService.SaveNewGame("Nuevo Juego", folderPath, exePath);
     }
 }
-
-public record GameAddedMessage(steamcito.Models.Game Game);

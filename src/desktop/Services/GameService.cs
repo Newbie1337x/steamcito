@@ -1,8 +1,6 @@
 ﻿using steamcito.Models;
 using steamcito.Data;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
 namespace steamcito.Services;
 
@@ -16,22 +14,8 @@ public class GameService
     }
     public void runGame(string exePath)
     {
-        // TODO implement detection of game running
-        
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = exePath,
-            UseShellExecute = true,
-            WorkingDirectory = Path.GetDirectoryName(exePath)
-        });
-        
-        //Aplicar para juegos de steam
-       /* Process.Start(new ProcessStartInfo
-        {
-            FileName = "steam://rungameid/480",
-            UseShellExecute = true
-        });
-    */
+        // TODO implement run game
+        System.Diagnostics.Process.Start(exePath);
     }
 
     public List<Game> GetAll() => _context.Games
@@ -44,7 +28,7 @@ public class GameService
     public Game SaveNewGame(string title, string folderPath, string exePath)
     {
        
-        var game = new Game
+        var nuevoJuego = new Game
         {
             Details = new GameDetails
             {
@@ -56,23 +40,23 @@ public class GameService
         
         var gamePaths = new GamePaths
         {
-            GameId = game.Id,
-            Game = game,
+            GameId = nuevoJuego.Id,
+            Game = nuevoJuego,
             FolderPath = folderPath,
             ExePath = exePath
         };
         
         var artwork = new Artwork
         {
-            GameId = game.Id,
-            Game = game
+            GameId = nuevoJuego.Id,
+            Game = nuevoJuego
         };
         
-        game.GamePaths = gamePaths;
-        game.Artworks = artwork;
+        nuevoJuego.GamePaths = gamePaths;
+        nuevoJuego.Artworks = artwork;
         
-        _context.Games.Add(game);
+        _context.Games.Add(nuevoJuego);
         _context.SaveChanges();
-        return game;
+        return nuevoJuego;
     }
 }
