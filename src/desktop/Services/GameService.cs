@@ -1,26 +1,33 @@
 ﻿using steamcito.Models;
 using steamcito.Data;
 using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 namespace steamcito.Services;
 
 public class GameService
 {
+    private readonly AppDBContext _context;
+    
+    public GameService(AppDBContext context)
+    {
+        _context = context;
+    }
     public void runGame(string exePath)
     {
         // TODO implement run game
         System.Diagnostics.Process.Start(exePath);
     }
 
-    public ObservableCollection<Game> GetAllGames()
-    {
-        using var db = new AppDBContext();
-        var games = db.Games.ToList();
-        return new ObservableCollection<Game>(games);
-    }
-
+    public List<Game> GetAll() => _context.Games
+        .Include(g => g.Details)
+        .Include(g => g.GamePaths)
+        .Include(g => g.Artworks)
+        .ToList();
+    public Game? GetById(string id) => _context.Games.Find(id);
+    
     public Game SaveNewGame(string title, string folderPath, string exePath)
     {
-        using var db = new AppDBContext();
+       
         var nuevoJuego = new Game
         {
             Details = new GameDetails
@@ -30,8 +37,6 @@ public class GameService
                 IsInstalled = true
             }
         };
-
-        db.Games.Add(nuevoJuego);
         
         var gamePaths = new GamePaths
         {
@@ -50,9 +55,8 @@ public class GameService
         nuevoJuego.GamePaths = gamePaths;
         nuevoJuego.Artworks = artwork;
         
-        db.GamePaths.Add(gamePaths);
-        db.Artworks.Add(artwork);
-        db.SaveChanges();
+        _context.Games.Add(nuevoJuego);
+        _context.SaveChanges();
         return nuevoJuego;
     }
 }

@@ -10,7 +10,7 @@ public partial class MainWindowModel : ObservableObject
 
     public MainWindowModel()
     {
-        _gameService = new GameService();
+        _gameService = new GameService(new steamcito.Data.AppDBContext());
     }
 
     [RelayCommand]

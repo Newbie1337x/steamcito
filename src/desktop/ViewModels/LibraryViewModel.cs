@@ -19,14 +19,13 @@ namespace steamcito.ViewModels
 
         public LibraryViewModel()
         {
-            _gameService = new GameService();
+            _gameService = new GameService(new steamcito.Data.AppDBContext());
             LoadGames();
         }
 
         private void LoadGames()
         {
-           
-            Games = _gameService.GetAllGames();
+            Games = new ObservableCollection<Game>(_gameService.GetAll());
             Debug.WriteLine($"Loaded {Games.Count} games from the database.");
 
         }
