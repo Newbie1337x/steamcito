@@ -13,13 +13,20 @@ namespace steamcito.Views
         {
             InitializeComponent();
             mainWindowModel = new MainWindowModel();
+            LibraryViewControl.Visibility = Visibility.Visible;
             DataContext = mainWindowModel;
         }
 
-   
+
         private void AddProduct_Click(object sender, RoutedEventArgs e)
         {
             mainWindowModel.AddGameCommand.Execute(null);
+        }
+
+        private void LibraryButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(LibraryViewControl.Visibility == Visibility.Visible) return;
+            LibraryViewControl.Visibility = Visibility.Visible;
         }
     }
 }
