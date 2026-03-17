@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using steamcito.ViewModels;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace steamcito.Views
@@ -11,6 +12,7 @@ namespace steamcito.Views
         public LibraryView()
         {
             InitializeComponent();
+            DataContext = new LibraryViewModel();
         }
     }
 }

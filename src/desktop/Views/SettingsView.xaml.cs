@@ -2,7 +2,7 @@
 
 namespace steamcito.Views;
 
-public partial class SettingsView : Page
+public partial class SettingsView : System.Windows.Controls.UserControl
 {
     public SettingsView()
     {

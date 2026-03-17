@@ -14,6 +14,7 @@ namespace steamcito.Views
             InitializeComponent();
             mainWindowModel = new MainWindowModel();
             LibraryViewControl.Visibility = Visibility.Visible;
+            SettingsViewControl.Visibility = Visibility.Collapsed;
             DataContext = mainWindowModel;
         }
 
@@ -26,12 +27,14 @@ namespace steamcito.Views
         private void LibraryButton_Click(object sender, RoutedEventArgs e)
         {
             if(LibraryViewControl.Visibility == Visibility.Visible) return;
+            SettingsViewControl.Visibility = Visibility.Collapsed;
             LibraryViewControl.Visibility = Visibility.Visible;
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             if(SettingsViewControl.Visibility == Visibility.Visible) return;
+            LibraryViewControl.Visibility = Visibility.Collapsed;
             SettingsViewControl.Visibility = Visibility.Visible;
         }
     }

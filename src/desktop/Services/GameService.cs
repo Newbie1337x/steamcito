@@ -1,10 +1,23 @@
 ﻿using steamcito.Models;
 using steamcito.Data;
+using System.Collections.ObjectModel;
 namespace steamcito.Services;
 
 public class GameService
 {
-    
+    public void runGame(string exePath)
+    {
+        // TODO implement run game
+        System.Diagnostics.Process.Start(exePath);
+    }
+
+    public ObservableCollection<Game> GetAllGames()
+    {
+        using var db = new AppDBContext();
+        var games = db.Games.ToList();
+        return new ObservableCollection<Game>(games);
+    }
+
     public Game SaveNewGame(string title, string folderPath, string exePath)
     {
         using var db = new AppDBContext();
