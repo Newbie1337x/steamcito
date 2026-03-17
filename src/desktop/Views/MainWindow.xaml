@@ -1,125 +1,106 @@
-﻿<Window WindowStyle="None"
-        AllowsTransparency="True"
-        Background="Transparent"
-        ResizeMode="CanResize"
-        x:Class="steamcito.Views.MainWindow"
+﻿<Window x:Class="steamcito.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:steamcito.Views"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        WindowStyle="None"
+        AllowsTransparency="False"
+        Background="#FF171D25"
+        ResizeMode="CanResize"
+        WindowStartupLocation="CenterScreen">
 
-    <Grid>
-        <!-- FILAS -->
-        <Grid.RowDefinitions>
-            
-            <!-- HEADER -->
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="40"/>
-            <!-- CONTENT -->
-            <RowDefinition Height="*"/>
-            <!-- FOOTER -->
-            <RowDefinition Height="40"/>
-            
-        </Grid.RowDefinitions>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="20" 
+                      GlassFrameThickness="0" 
+                      CornerRadius="0"
+                      ResizeBorderThickness="4"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
-        <!-- HEADER -->
-        <Grid Background="#FF171D25" MouseLeftButtonDown="TopBar_MouseLeftButtonDown">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            
-            <TextBlock Text="STEAMCITO"
-                       FontSize="14"
-                       FontWeight="Bold"
-                       Foreground="White"
-                       VerticalAlignment="Center"
-                       Margin="20,0,0,0"
-                       Grid.Column="0"/>
-
-            <StackPanel Orientation="Horizontal"
-                        Grid.Column="1"
-                        HorizontalAlignment="Right">
-
-                <Button Content="—"
-                        Width="40"
-                        Height="30"
-                        Background="Transparent"
-                        Foreground="White"
-                        BorderBrush="{x:Null}"
-                        Click="Minimize_Click"/>
-
-                <Button Content="☐"
-                        Width="40"
-                        Height="30"
-                        Background="Transparent"
-                        Foreground="White"
-                        BorderBrush="{x:Null}"
-                        Click="Maximize_Click"/>
-
-                <Button Content="X"
-                        Width="40"
-                        Height="30"
-                        Background="Transparent"
-                        Foreground="White"
-                        BorderBrush="{x:Null}"
-                        Click="Close_Click"/>
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="1" Background="#FF171D25">
-            <StackPanel Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"
-                        Margin="10,0,0,0">
+    <Border x:Name="MainBorder" 
+            BorderBrush="#FF4A4A4A" 
+            BorderThickness="1"
+            Margin="0">
         
-                <Button x:Name="LibraryButton"
-                        Content="Library"
-                        Width="120"
-                        Margin="0,0,10,0"
-                        Click="LibraryButton_Click"
-                        Background="#00DDDDDD"
-                        FontSize="18"
-                        BorderBrush="#00171D25"
-                        Foreground="White"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
 
-                <Button x:Name="SettingsButton"
-                        Content="Settings"
-                        Width="120"
-                        Click="SettingsButton_Click"
-                        Background="#00DDDDDD"
-                        FontSize="18"
-                        BorderBrush="#00171D25"
-                        Foreground="White"/>
-            </StackPanel>
+            <Grid Background="#FF171D25" Grid.Row="0" MouseLeftButtonDown="TopBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="STEAMCITO"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="Gray"
+                           VerticalAlignment="Center"
+                           Margin="15,0,0,0"
+                           Grid.Column="0"/>
+
+                <StackPanel Orientation="Horizontal"
+                            Grid.Column="1"
+                            WindowChrome.IsHitTestVisibleInChrome="True"> 
+
+                    <Button Content="—" Width="40" Height="20" Background="Transparent" Foreground="White" BorderBrush="{x:Null}" Click="Minimize_Click"/>
+                    <Button Content="☐" Width="40" Height="20" Background="Transparent" Foreground="White" BorderBrush="{x:Null}" Click="Maximize_Click"/>
+                    <Button Content="X" Width="40" Height="20" Background="Transparent" Foreground="White" BorderBrush="{x:Null}" Click="Close_Click"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" Background="#FF171D25">
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            Margin="10,0,0,0"
+                            WindowChrome.IsHitTestVisibleInChrome="True"> 
+            
+                    <Button x:Name="LibraryButton"
+                            Content="Library"
+                            Width="120"
+                            Margin="0,0,10,0"
+                            Click="LibraryButton_Click"
+                            Background="Transparent"
+                            FontSize="18"
+                            BorderBrush="{x:Null}"
+                            Foreground="White"/>
+
+                    <Button x:Name="SettingsButton"
+                            Content="Settings"
+                            Width="120"
+                            Click="SettingsButton_Click"
+                            Background="Transparent"
+                            FontSize="18"
+                            BorderBrush="{x:Null}"
+                            Foreground="White"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="2">
+                <ContentControl x:Name="MainContent" Background="#FF222222"/>
+                <local:LibraryView x:Name="LibraryViewControl" Visibility="Hidden"/>
+                <local:SettingsView x:Name="SettingsViewControl" Visibility="Hidden"/>
+            </Grid>
+
+            <Grid Grid.Row="3" Background="#FF171D25">
+                <Button x:Name="AddProductButton"
+                        Content="+ Add a product"
+                        Margin="10,0,0,0"
+                        Padding="10,2"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Click="AddProduct_Click"
+                        Foreground="#FF999999"
+                        Background="Transparent"
+                        BorderBrush="{x:Null}"
+                        WindowChrome.IsHitTestVisibleInChrome="True"/> 
+            </Grid>
         </Grid>
-
-        <!-- CONTENT -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="48"/>
-                <ColumnDefinition Width="152"/>
-                <!-- SIDEBAR -->
-                <ColumnDefinition Width="*"/>
-                <!-- MAIN -->
-            </Grid.ColumnDefinitions>
-
-            <!-- SIDEBAR -->
-
-            <!-- MAIN CONTENT DINÁMICO -->
-            <ContentControl x:Name="MainContent" Grid.ColumnSpan="3" Background="#FF222222"/>
-            <local:LibraryView x:Name="LibraryViewControl" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Hidden"/>
-            <local:SettingsView x:Name="SettingsViewControl" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Hidden"/>
-        </Grid>
-
-        <!-- FOOTER -->
-        <Grid Grid.Row="3" Background="#FF171D25">
-            <Button x:Name="AddProductButton"
-                    Content="Add a product"
-                    Margin="10,0,0,10"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Bottom"
-                    Click="AddProduct_Click" Foreground="White" Background="#00DDDDDD" BorderBrush="#00707070"/>
-        </Grid>
-
-    </Grid>
+    </Border>
 </Window>
