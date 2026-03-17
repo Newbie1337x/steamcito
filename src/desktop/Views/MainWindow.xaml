@@ -7,22 +7,41 @@
     <Grid>
         <!-- FILAS -->
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            
             <!-- HEADER -->
-            <RowDefinition Height="*"/>
-            <!-- CONTENT -->
             <RowDefinition Height="40"/>
+            <!-- CONTENT -->
+            <RowDefinition Height="*"/>
             <!-- FOOTER -->
+            <RowDefinition Height="40"/>
+            
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
         <Grid Grid.Row="0" Background="#FF171D25">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="21*"/>
-                <ColumnDefinition Width="29*"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,10,0" Grid.ColumnSpan="2">
-                <Button x:Name="LibraryButton" Content="Library" Width="100" Click="LibraryButton_Click" Background="#00DDDDDD" FontSize="18" BorderBrush="#00171D25" Foreground="White"/>
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        Margin="10,0,0,0">
+        
+                <Button x:Name="LibraryButton"
+                        Content="Library"
+                        Width="120"
+                        Margin="0,0,10,0"
+                        Click="LibraryButton_Click"
+                        Background="#00DDDDDD"
+                        FontSize="18"
+                        BorderBrush="#00171D25"
+                        Foreground="White"/>
+
+                <Button x:Name="SettingsButton"
+                        Content="Settings"
+                        Width="120"
+                        Click="SettingsButton_Click"
+                        Background="#00DDDDDD"
+                        FontSize="18"
+                        BorderBrush="#00171D25"
+                        Foreground="White"/>
             </StackPanel>
         </Grid>
 
@@ -40,7 +59,8 @@
 
             <!-- MAIN CONTENT DINÁMICO -->
             <ContentControl x:Name="MainContent" Grid.ColumnSpan="3" Background="#FF222222"/>
-            <local:LibraryView x:Name="LibraryViewControl" Grid.ColumnSpan="3" Visibility="Hidden"/>
+            <local:LibraryView x:Name="LibraryViewControl" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Hidden"/>
+            <local:SettingsView x:Name="SettingsViewControl" Grid.ColumnSpan="3" Grid.Column="0" Visibility="Hidden"/>
         </Grid>
 
         <!-- FOOTER -->

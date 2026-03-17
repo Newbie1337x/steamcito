@@ -28,5 +28,11 @@ namespace steamcito.Views
             if(LibraryViewControl.Visibility == Visibility.Visible) return;
             LibraryViewControl.Visibility = Visibility.Visible;
         }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(SettingsViewControl.Visibility == Visibility.Visible) return;
+            SettingsViewControl.Visibility = Visibility.Visible;
+        }
     }
 }
