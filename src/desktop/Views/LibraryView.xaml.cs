@@ -14,5 +14,16 @@ namespace steamcito.Views
             InitializeComponent();
             DataContext = new LibraryViewModel();
         }
+
+        private void PlayButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is LibraryViewModel vm)
+            {
+                vm.RunGameCommand.Execute(null);
+            }
+        }
+
+     
     }
 }
+

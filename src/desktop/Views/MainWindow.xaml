@@ -73,23 +73,27 @@
                         Margin="10,0,0,0">
         
                 <Button x:Name="LibraryButton"
-                        Content="Library"
+                        Content="LIBRARY"
                         Width="120"
                         Margin="0,0,10,0"
                         Click="LibraryButton_Click"
-                        Background="#00DDDDDD"
-                        FontSize="18"
-                        BorderBrush="#00171D25"
-                        Foreground="White"/>
+                        Background="Transparent"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        BorderBrush="Transparent"
+                        Foreground="White"
+                        Cursor="Hand"/>
 
                 <Button x:Name="SettingsButton"
-                        Content="Settings"
+                        Content="SETTINGS"
                         Width="120"
                         Click="SettingsButton_Click"
-                        Background="#00DDDDDD"
-                        FontSize="18"
-                        BorderBrush="#00171D25"
-                        Foreground="White"/>
+                        Background="Transparent"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        BorderBrush="Transparent"
+                        Foreground="#8F98A0"
+                        Cursor="Hand"/>
             </StackPanel>
         </Grid>
 
