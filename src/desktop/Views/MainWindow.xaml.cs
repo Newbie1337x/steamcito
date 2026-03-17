@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 using steamcito.ViewModels;
 namespace steamcito.Views
 {
@@ -36,6 +37,37 @@ namespace steamcito.Views
             if(SettingsViewControl.Visibility == Visibility.Visible) return;
             LibraryViewControl.Visibility = Visibility.Collapsed;
             SettingsViewControl.Visibility = Visibility.Visible;
+        }
+        
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void Maximize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized 
+                ? WindowState.Normal 
+                : WindowState.Maximized;
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+        
+        private void TopBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                WindowState = WindowState == WindowState.Maximized
+                    ? WindowState.Normal
+                    : WindowState.Maximized;
+            }
+            else
+            {
+                DragMove();
+            }
         }
     }
 }

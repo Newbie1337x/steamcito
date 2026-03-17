@@ -1,4 +1,8 @@
-﻿<Window x:Class="steamcito.Views.MainWindow"
+﻿<Window WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="CanResize"
+        x:Class="steamcito.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:steamcito.Views"
@@ -9,6 +13,7 @@
         <Grid.RowDefinitions>
             
             <!-- HEADER -->
+            <RowDefinition Height="20"/>
             <RowDefinition Height="40"/>
             <!-- CONTENT -->
             <RowDefinition Height="*"/>
@@ -18,7 +23,50 @@
         </Grid.RowDefinitions>
 
         <!-- HEADER -->
-        <Grid Grid.Row="0" Background="#FF171D25">
+        <Grid Background="#FF171D25" MouseLeftButtonDown="TopBar_MouseLeftButtonDown">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Text="STEAMCITO"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       VerticalAlignment="Center"
+                       Margin="20,0,0,0"
+                       Grid.Column="0"/>
+
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="1"
+                        HorizontalAlignment="Right">
+
+                <Button Content="—"
+                        Width="40"
+                        Height="30"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderBrush="{x:Null}"
+                        Click="Minimize_Click"/>
+
+                <Button Content="☐"
+                        Width="40"
+                        Height="30"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderBrush="{x:Null}"
+                        Click="Maximize_Click"/>
+
+                <Button Content="X"
+                        Width="40"
+                        Height="30"
+                        Background="Transparent"
+                        Foreground="White"
+                        BorderBrush="{x:Null}"
+                        Click="Close_Click"/>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1" Background="#FF171D25">
             <StackPanel Orientation="Horizontal"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Left"
@@ -46,7 +94,7 @@
         </Grid>
 
         <!-- CONTENT -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="48"/>
                 <ColumnDefinition Width="152"/>
@@ -64,7 +112,7 @@
         </Grid>
 
         <!-- FOOTER -->
-        <Grid Grid.Row="2" Background="#FF171D25">
+        <Grid Grid.Row="3" Background="#FF171D25">
             <Button x:Name="AddProductButton"
                     Content="Add a product"
                     Margin="10,0,0,10"
