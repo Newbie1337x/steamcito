@@ -17,7 +17,7 @@ public partial class MainWindowModel : ObservableObject
     {
         string folderPath = "";
         string exePath = "";
-        
+
         using (var folderDialog = new FolderBrowserDialog())
         {
             folderDialog.Description = "Selecciona la carpeta del juego";

@@ -7,10 +7,19 @@ namespace steamcito.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        MainWindowModel mainWindowModel;
+
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowModel();
+            mainWindowModel = new MainWindowModel();
+            DataContext = mainWindowModel;
+        }
+
+   
+        private void AddProduct_Click(object sender, RoutedEventArgs e)
+        {
+            mainWindowModel.AddGameCommand.Execute(null);
         }
     }
 }
