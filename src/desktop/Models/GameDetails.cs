@@ -26,6 +26,9 @@ public partial class GameDetails : ObservableObject
     public DateTime? ReleaseDate { get; set; }
     [ObservableProperty] 
     private TimeSpan _playTime;
+
+    [ObservableProperty]
+    private bool _isSigned;
     
     [ObservableProperty]
     private DateTime _lastTime;

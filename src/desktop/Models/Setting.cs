@@ -10,5 +10,4 @@ public class Setting
     [ForeignKey("UserId")]
     public required User User { get; set; }
     public required Language Language { get; set; }
-    
 }

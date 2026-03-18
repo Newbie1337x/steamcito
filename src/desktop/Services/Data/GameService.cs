@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using IWshRuntimeLibrary;
 using Microsoft.EntityFrameworkCore;
+using steamcito.Models.Dtos;
 using File = System.IO.File;
 
 namespace steamcito.Services;
@@ -23,7 +24,13 @@ public class GameService
         _context.Games.Remove(game);
         _context.SaveChanges();
     }
-    
+
+    public void SaveGame(Game game)
+    {
+        _context.Games.Add(game);
+        _context.SaveChanges();
+    }
+
 
     public List<Game> GetAll() => _context.Games
         .Include(g => g.Details)
@@ -32,7 +39,7 @@ public class GameService
         .ToList();
     public Game? GetById(string id) => _context.Games.Find(id);
     
-    public Game SaveNewGame(string title, string folderPath, string exePath)
+    public Game SaveNewGame(string title, string folderPath, string exePath, DllDetectionResults dllResults)
     {
        
         var game = new Game
@@ -41,7 +48,10 @@ public class GameService
             {
                 Title = title,
                 AddedAt = DateTime.Now,
-                IsInstalled = true
+                IsInstalled = true,
+                Store = dllResults.StoreType,
+                IsSigned = dllResults.IsSigned,
+                
             }
         };
         
@@ -50,7 +60,8 @@ public class GameService
             GameId = game.Id,
             Game = game,
             FolderPath = folderPath,
-            ExePath = exePath
+            ExePath = exePath,
+            DllPath = dllResults.FilePath,
         };
         
         var artwork = new Artwork

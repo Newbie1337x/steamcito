@@ -8,6 +8,7 @@ namespace steamcito.Models;
 [Table ("games")]
 public partial class Game : ObservableObject
 {
+
     [Key]
     public int Id { get; set; }
     

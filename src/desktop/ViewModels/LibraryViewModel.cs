@@ -16,11 +16,10 @@ namespace steamcito.ViewModels
         private readonly GameService _gameService;
         private readonly GameSessionManager _gameSessionManager = new();
         private readonly PathManager _pathManager = new();
-
-        [ObservableProperty] private ObservableCollection<Game> games = new();
-
+        
+        [ObservableProperty] private ObservableCollection<Game> _games = new();
         [ObservableProperty] private Game? _selectedGame;
-
+        
         public LibraryViewModel(GameService gameService)
         {
             _gameService = gameService;
@@ -33,9 +32,7 @@ namespace steamcito.ViewModels
                 {
                     game.Details.PlayTime += playTime;
                     game.Details.LastTime = DateTime.Now;
-
                     _gameService.Update(game);
-
                     Debug.WriteLine($"Game {game.Details.Title} closed after {playTime}");
                 });
             };
@@ -58,25 +55,22 @@ namespace steamcito.ViewModels
             {
                 SelectedGame = Games[0];
             }
-
             Debug.WriteLine($"Loaded {Games.Count} games from the database.");
         }
 
         [RelayCommand]
         private void PlayGame(Game game)
         {
-            if (game?.GamePaths?.ExePath == null)
+            if (game.GamePaths?.ExePath == null)
                 return;
 
             if (!game.IsRunning)
             {
                 _gameSessionManager.LaunchGame(game);
-                Debug.WriteLine($"Running game: {game.Details.Title}");
             }
             else
             {
                 _gameSessionManager.StopGame();
-                Debug.WriteLine($"Stopping/Cancelling game: {game.Details.Title}");
             }
         }
         
@@ -86,7 +80,7 @@ namespace steamcito.ViewModels
             if (game.GamePaths?.ExePath == null )
                 return;
             
-           _pathManager.CreateShortcut(game.GamePaths, game.Details.Title);
+           _pathManager.CreateShortcut(game.GamePaths.ExePath, game.Details.Title);
         }
 
         [RelayCommand]
@@ -96,8 +90,7 @@ namespace steamcito.ViewModels
             _gameService.Update(game);
         }
 
-
-
+        
         [RelayCommand]
         private void RemoveGame(Game? game)
         {
@@ -111,19 +104,9 @@ namespace steamcito.ViewModels
         }
         
         [RelayCommand]
-        private  void OpenFolder(Game game)
+        private  void OpenFolder(string folderPath)
         {
-            if (game?.GamePaths?.FolderPath == null)
-                return;
-            
-            if (Directory.Exists(game.GamePaths.FolderPath))
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = game.GamePaths.FolderPath,
-                    UseShellExecute = true
-                });
-            }
+          _pathManager.OpenFolder(folderPath);
         }
         
         [RelayCommand]

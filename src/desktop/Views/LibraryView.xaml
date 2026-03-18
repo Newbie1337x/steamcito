@@ -121,7 +121,7 @@
 
                                             <MenuItem Header="Browse local files"
                                                       Command="{Binding OpenFolderCommand}"
-                                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                      CommandParameter="{Binding PlacementTarget.DataContext.GamePaths.FolderPath, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
 
                                             <MenuItem Header="Remove"
                                                       Command="{Binding RemoveGameCommand}"
@@ -339,6 +339,14 @@
                         <StackPanel Margin="0,10">
                             <TextBlock Text="LAST SESSION" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
                             <TextBlock Text="{Binding SelectedGame.Details.LastTime, StringFormat=\{0:dd/MM/yyyy\}, FallbackValue='Never'}" Foreground="White" FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,10">
+                            <TextBlock Text="STORE" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding SelectedGame.Details.Store,FallbackValue='Other'}" Foreground="White" FontSize="14"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,10">
+                            <TextBlock Text="HAS LICENCE" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding SelectedGame.Details.IsSigned}" Foreground="White" FontSize="14"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>

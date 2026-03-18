@@ -3,12 +3,14 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using steamcito.Services;
 using steamcito.Models;
+using steamcito.Models.Dtos;
 
 namespace steamcito.ViewModels;
 
 public partial class MainWindowModel : ObservableObject
 {
     private readonly GameService _gameService;
+    private readonly PathManager _pathManager = new();
 
     public MainWindowModel(GameService gameService)
     {
@@ -18,8 +20,9 @@ public partial class MainWindowModel : ObservableObject
     [RelayCommand]
     private void AddGame()
     {
-        string folderPath = "";
+        string folderPath;
         string exePath = "";
+        DllDetectionResults? dllResults;
 
         
         using (var folderDialog = new FolderBrowserDialog())
@@ -30,6 +33,9 @@ public partial class MainWindowModel : ObservableObject
             }
             folderPath = folderDialog.SelectedPath;
         }
+
+        dllResults = _pathManager.FindStoreDll(folderPath);
+        
 
         Microsoft.Win32.OpenFileDialog fileDialog = new Microsoft.Win32.OpenFileDialog()
         {
@@ -50,7 +56,8 @@ public partial class MainWindowModel : ObservableObject
         }
 
         string gameTitle = System.IO.Path.GetFileNameWithoutExtension(exePath);
-        var nuevoJuego = _gameService.SaveNewGame(gameTitle, folderPath, exePath);
+        
+        var nuevoJuego = _gameService.SaveNewGame(gameTitle, folderPath, exePath,dllResults);
         
         // Notificar que se agregó un juego
         WeakReferenceMessenger.Default.Send(new GameAddedMessage(nuevoJuego));
