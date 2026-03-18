@@ -15,6 +15,7 @@ namespace steamcito.ViewModels
     {
         private readonly GameService _gameService;
         private readonly GameSessionManager _gameSessionManager = new();
+        private readonly PathManager _pathManager = new();
 
         [ObservableProperty] private ObservableCollection<Game> games = new();
 
@@ -85,7 +86,7 @@ namespace steamcito.ViewModels
             if (game.GamePaths?.ExePath == null )
                 return;
             
-           _gameService.CreateShortcut(game.GamePaths, game.Details.Title);
+           _pathManager.CreateShortcut(game.GamePaths, game.Details.Title);
         }
 
         [RelayCommand]

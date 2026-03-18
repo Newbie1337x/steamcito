@@ -17,55 +17,13 @@ public class GameService
     {
         _context = context;
     }
-    public void RunGame(string exePath)
-    {
-        // TODO implement detection of game running
-        
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = exePath,
-            UseShellExecute = true,
-            WorkingDirectory = Path.GetDirectoryName(exePath)
-        });
-        //Aplicar para juegos de steam
-       /* Process.Start(new ProcessStartInfo
-        {
-            FileName = "steam://rungameid/480",
-            UseShellExecute = true
-        });
-    */
-    }
 
     public void RemoveGame(Game game)
     {
         _context.Games.Remove(game);
         _context.SaveChanges();
     }
-
-    public void CreateShortcut(GamePaths gamePaths, string name)
-    {
-        var exePath = gamePaths.ExePath;
-        
-        if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
-            return;
-        
-        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-        // name of shortcut
-        string shortcutName = name + ".lnk";
-        string shortcutPath = Path.Combine(desktopPath, shortcutName);
-        
-        //Create shortcut
-        var shell = new WshShell();
-        IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
-
-        shortcut.TargetPath = exePath;
-        shortcut.WorkingDirectory = Path.GetDirectoryName(exePath);
-        shortcut.Description = "Launch game";
-        shortcut.IconLocation = exePath;
-
-        shortcut.Save();
-    }
+    
 
     public List<Game> GetAll() => _context.Games
         .Include(g => g.Details)
