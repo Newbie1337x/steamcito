@@ -11,7 +11,6 @@ public partial class Game : ObservableObject
     [Key]
     public int Id { get; set; }
     
-    [NotMapped]
     [ObservableProperty]
     private bool _isRunning;
     

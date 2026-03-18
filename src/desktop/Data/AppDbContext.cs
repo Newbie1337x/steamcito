@@ -39,5 +39,8 @@ public class AppDBContext : DbContext
             .HasOne(g => g.Artworks)
             .WithOne(a => a.Game)
             .HasForeignKey<Artwork>(a => a.GameId);
+        
+        modelBuilder.Entity<Game>()
+            .Ignore(g => g.IsRunning);
     }
 }
