@@ -7,12 +7,14 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using steamcito.Views;
+using Application = System.Windows.Application;
 
 namespace steamcito.ViewModels
 {
     public partial class LibraryViewModel : ObservableObject, IRecipient<GameAddedMessage>
     {
         private readonly GameService _gameService;
+        private readonly GameSessionManager _gameSessionManager = new();
 
         [ObservableProperty] private ObservableCollection<Game> games = new();
 
@@ -23,6 +25,19 @@ namespace steamcito.ViewModels
             _gameService = gameService;
             LoadGames();
             WeakReferenceMessenger.Default.Register(this);
+
+            _gameSessionManager.OnGameClosed += (game, playTime) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    game.Details.PlayTime += playTime;
+                    game.Details.LastTime = DateTime.Now;
+
+                    _gameService.Update(game);
+
+                    Debug.WriteLine($"Game {game.Details.Title} closed after {playTime}");
+                });
+            };
         }
 
         public void Receive(GameAddedMessage message)
@@ -52,9 +67,16 @@ namespace steamcito.ViewModels
             if (game?.GamePaths?.ExePath == null)
                 return;
 
-            _gameService.runGame(game.GamePaths.ExePath);
-
-            Debug.WriteLine($"Running game: {game.Details.Title}");
+            if (!game.IsRunning)
+            {
+                _gameSessionManager.LaunchGame(game);
+                Debug.WriteLine($"Running game: {game.Details.Title}");
+            }
+            else
+            {
+                _gameSessionManager.StopGame();
+                Debug.WriteLine($"Stopping/Cancelling game: {game.Details.Title}");
+            }
         }
         
         [RelayCommand]

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace steamcito.Models;
 
 [Table("gamedetails")]
-public partial class GameDetails
+public partial class GameDetails : ObservableObject
 {
     [Key]
     public int Id { get; set; }
@@ -24,8 +24,11 @@ public partial class GameDetails
     public string? Title { get; set; }
     public string? Description { get; set; }
     public DateTime? ReleaseDate { get; set; }
-    public TimeSpan PlayedTime { get; set; }
-    public DateTime? LastTime { get; set; }
+    [ObservableProperty] 
+    private TimeSpan _playTime;
+    
+    [ObservableProperty]
+    private DateTime _lastTime;
     public StoreType Store { get; set; }
     public string? Platform { get; set; }
     public bool IsInstalled { get; set; }

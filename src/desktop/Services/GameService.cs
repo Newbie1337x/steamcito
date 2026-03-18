@@ -17,7 +17,7 @@ public class GameService
     {
         _context = context;
     }
-    public void runGame(string exePath)
+    public void RunGame(string exePath)
     {
         // TODO implement detection of game running
         

@@ -67,18 +67,29 @@
                                     <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
 
                                         <!-- PLAY -->
-                                        <MenuItem Header="▶ Play"
-                                                  FontWeight="SemiBold"
+                                        <MenuItem FontWeight="SemiBold"
                                                   Foreground="White"
                                                   Command="{Binding PlayGameCommand}"
                                                   CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                             <MenuItem.Style>
                                                 <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                    <Setter Property="Header" Value="▶ Play" />
                                                     <Setter Property="Background" Value="#3d922e"/>
                                                     <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding PlacementTarget.DataContext.IsRunning, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                                            <Setter Property="Header" Value="◼ Stop" />
+                                                            <Setter Property="Background" Value="#A03131"/>
+                                                        </DataTrigger>
                                                         <Trigger Property="IsHighlighted" Value="True">
                                                             <Setter Property="Background" Value="#55c03d"/>
                                                         </Trigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding IsHighlighted, RelativeSource={RelativeSource Self}}" Value="True" />
+                                                                <Condition Binding="{Binding PlacementTarget.DataContext.IsRunning, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True" />
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Background" Value="#C04040"/>
+                                                        </MultiDataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </MenuItem.Style>
@@ -217,7 +228,6 @@
                 <StackPanel Orientation="Horizontal" Margin="30,15">
 
                     <Button x:Name="PlayButton" 
-                            Content="Play"
                             Width="160"
                             Height="45"
                             Foreground="White"
@@ -229,6 +239,7 @@
                             CommandParameter="{Binding SelectedGame}">
                         <Button.Style>
                             <Style TargetType="Button">
+                                <Setter Property="Content" Value="Play"/>
                                 <Setter Property="Background" Value="#3d922e"/>
                                 <Setter Property="OverridesDefaultStyle" Value="True"/>
                                 <Setter Property="Template">
@@ -241,9 +252,22 @@
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedGame.IsRunning}" Value="True">
+                                        <Setter Property="Content" Value="Stop"/>
+                                        <Setter Property="Background" Value="#A03131"/>
+                                    </DataTrigger>
+                                    
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background" Value="#55c03d"/>
                                     </Trigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                                            <Condition Binding="{Binding SelectedGame.IsRunning}" Value="True" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Background" Value="#C04040"/>
+                                    </MultiDataTrigger>
+                                    
                                     <Trigger Property="IsPressed" Value="True">
                                         <Setter Property="Background" Value="#66d04e"/>
                                     </Trigger>
@@ -309,7 +333,7 @@
                         
                         <StackPanel Margin="0,5">
                             <TextBlock Text="PLAYED TIME" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding SelectedGame.Details.PlayedTime, StringFormat=\{0:hh\\:mm\} hs}" Foreground="White" FontSize="14"/>
+                            <TextBlock Text="{Binding SelectedGame.Details.PlayTime, StringFormat=\{0:hh\\:mm\} hs}" Foreground="White" FontSize="14"/>
                         </StackPanel>
 
                         <StackPanel Margin="0,10">
