@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using Microsoft.Extensions.DependencyInjection;
 using steamcito.ViewModels;
 namespace steamcito.Views
@@ -19,34 +20,24 @@ namespace steamcito.Views
             LibraryViewControl.Visibility = Visibility.Visible;
             SettingsViewControl.Visibility = Visibility.Collapsed;
             DataContext = _mainWindowModel;
-            StateChanged += MainWindow_StateChanged;
+            
             SourceInitialized += MainWindow_SourceInitialized;
-            StateChanged += MainWindow_StateChanged;
+            
+            CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, (s, e) => SystemCommands.CloseWindow(this)));
+            CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, (s, e) => SystemCommands.MinimizeWindow(this)));
+            CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, (s, e) => 
+            {
+                if (WindowState == WindowState.Maximized)
+                    SystemCommands.RestoreWindow(this);
+                else
+                    SystemCommands.MaximizeWindow(this);
+            }));
         }
         
         private void MainWindow_SourceInitialized(object sender, EventArgs e)
         {
-            IntPtr handle = new System.Windows.Interop.WindowInteropHelper(this).Handle;
-            System.Windows.Interop.HwndSource.FromHwnd(handle)?.AddHook((WindowProc));
-        }
-        
-        private void MainWindow_StateChanged(object sender, EventArgs e)
-        {
-            var mainBorder = Template.FindName("MainBorder", this) as Border;
-    
-            if (mainBorder != null)
-            {
-                if (WindowState == WindowState.Maximized)
-                {
-                    mainBorder.CornerRadius = new CornerRadius(0);
-                    mainBorder.BorderThickness = new Thickness(0);
-                }
-                else
-                {
-                    mainBorder.CornerRadius = new CornerRadius(20);
-                    mainBorder.BorderThickness = new Thickness(2);
-                }
-            }
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            HwndSource.FromHwnd(handle)?.AddHook((WindowProc));
         }
         
         private IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -120,41 +111,6 @@ namespace steamcito.Views
             if(SettingsViewControl.Visibility == Visibility.Visible) return;
             LibraryViewControl.Visibility = Visibility.Collapsed;
             SettingsViewControl.Visibility = Visibility.Visible;
-        }
-        
-        private void Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void Maximize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState == WindowState.Maximized 
-                ? WindowState.Normal 
-                : WindowState.Maximized;
-        }
-
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-        
-        private void TopBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
-                Maximize_Click(sender, e);
-            }
-            else
-            {
-                if (e.LeftButton == MouseButtonState.Pressed)
-                {
-                    if (WindowState == WindowState.Normal)
-                    {
-                        DragMove();
-                    }
-                }
-            }
         }
     }
 }

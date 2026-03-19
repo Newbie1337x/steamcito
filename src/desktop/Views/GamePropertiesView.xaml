@@ -5,7 +5,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:steamcito.Views"
         mc:Ignorable="d"
-        Title="Properties" Height="450" Width="800">
+        Title="Properties" Height="450" Width="800"
+        Style="{StaticResource {x:Type Window}}"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        BorderBrush="{StaticResource WindowBorder}"
+        BorderThickness="2"
+        Padding="1">
     <Grid>
         <Grid Background="#1B2838">
 
@@ -44,7 +51,7 @@
 
                 </ListBox>
             </StackPanel>
-            <ContentControl Grid.Column="1" Content="ContentControl" HorizontalAlignment="Center" VerticalAlignment="Center" Height="434" Width="580"/>
+            <ContentControl Grid.Column="1" Content="TODO: Aca deberia ir algo?" HorizontalAlignment="Center" VerticalAlignment="Center" Height="434" Width="580"/>
 
             <!-- ===================== -->
             <!-- MAIN -->
