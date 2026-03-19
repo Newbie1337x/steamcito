@@ -1,14 +1,18 @@
 using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using IWshRuntimeLibrary;
 using steamcito.Models;
 using steamcito.Models.Dtos;
 using File = System.IO.File;
+using AuthenticodeExaminer;
 namespace steamcito.Services;
 
 public class PathManager
 {
+    
+    
+    
+    
 
     public void CreateShortcut(string exePath, string exeName)
     {
@@ -53,8 +57,7 @@ public class PathManager
         {
             [StoreType.Steam] = new[]
             {
-                "steam_api.dll",
-                "steam_api64.dll"
+                "steam_api*"
             },
             [StoreType.EpicGames] = new[]
             {
@@ -71,20 +74,42 @@ public class PathManager
 
         foreach (var store in storeDlls)
         {
+            var candidates = new List<string>();
+
             foreach (var dll in store.Value)
             {
-                var result = SearchFile(path, dll);
-                if (result != null)
+                var found = Directory
+                    .EnumerateFiles(path, dll, SearchOption.AllDirectories);
+
+                candidates.AddRange(found);
+            }
+
+            foreach (var file in candidates)
+            {
+                if (!IsPortableExecutable(file))
+                    continue;
+
+                if (IsValidSignature(file))
                 {
                     return new DllDetectionResults()
                     {
                         StoreType = store.Key,
-                        FilePath = result,
-                        IsSigned = IsValidSignature(result),
+                        FilePath = file,
+                        IsSigned = true
                     };
                 }
             }
             
+            var fallback = candidates.FirstOrDefault();
+            if (fallback != null)
+            {
+                return new DllDetectionResults()
+                {
+                    StoreType = store.Key,
+                    FilePath = fallback,
+                    IsSigned = false
+                };
+            }
         }
         return new DllDetectionResults();
     }
@@ -98,14 +123,44 @@ public class PathManager
             .EnumerateFiles(path, fileName, SearchOption.AllDirectories)
             .FirstOrDefault();
     }
-    
+
+
     private bool IsValidSignature(string filePath)
     {
         try
         {
-            var cert = new X509Certificate2(X509Certificate.CreateFromCertFile(filePath));
+            var inspector = new FileInspector(filePath);
+            var result = inspector.Validate();
 
-            return cert.Verify();
+            if (result != SignatureCheckResult.Valid)
+                return false;
+
+            var signatures = inspector.GetSignatures();
+            var signature = signatures.FirstOrDefault();
+
+            if (signature == null)
+                return false;
+
+            var cert = signature.SigningCertificate;
+
+            if (cert == null)
+                return false;
+        }
+        catch
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    private bool IsPortableExecutable(string filePath)
+    {
+        try
+        {
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            using var reader = new BinaryReader(stream);
+
+            return reader.ReadUInt16() == 0x5A4D; // "MZ"
         }
         catch
         {
