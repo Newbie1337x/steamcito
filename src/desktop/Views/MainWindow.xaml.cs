@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Extensions.DependencyInjection;
 using steamcito.ViewModels;
@@ -31,13 +32,20 @@ namespace steamcito.Views
         
         private void MainWindow_StateChanged(object sender, EventArgs e)
         {
-            if (WindowState == WindowState.Maximized)
+            var mainBorder = Template.FindName("MainBorder", this) as Border;
+    
+            if (mainBorder != null)
             {
-                MainBorder.Margin = new Thickness(0); 
-            }
-            else
-            {
-                MainBorder.Margin = new Thickness(0);
+                if (WindowState == WindowState.Maximized)
+                {
+                    mainBorder.CornerRadius = new CornerRadius(0);
+                    mainBorder.BorderThickness = new Thickness(0);
+                }
+                else
+                {
+                    mainBorder.CornerRadius = new CornerRadius(20);
+                    mainBorder.BorderThickness = new Thickness(2);
+                }
             }
         }
         
@@ -139,9 +147,12 @@ namespace steamcito.Views
             }
             else
             {
-                if (WindowState == WindowState.Normal)
+                if (e.LeftButton == MouseButtonState.Pressed)
                 {
-                    DragMove();
+                    if (WindowState == WindowState.Normal)
+                    {
+                        DragMove();
+                    }
                 }
             }
         }
