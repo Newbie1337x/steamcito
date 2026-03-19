@@ -345,7 +345,7 @@
                             <TextBlock Text="{Binding SelectedGame.Details.Store,FallbackValue='Other'}" Foreground="White" FontSize="14"/>
                         </StackPanel>
                         <StackPanel Margin="0,10">
-                            <TextBlock Text="HAS LICENCE" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
+                            <TextBlock Text="HAS ORIGINAL DLL" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
                             <TextBlock Text="{Binding SelectedGame.Details.IsSigned}" Foreground="White" FontSize="14"/>
                         </StackPanel>
                     </StackPanel>

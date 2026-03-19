@@ -6,5 +6,10 @@ public class DllDetectionResults
     public bool IsSigned { get; set; }
     public string FilePath { get; set; }
     
+    public bool IsRenamed { get; set; }
+    
+    public string injectDllPath { get; set; }
+    
+    
     
 }
