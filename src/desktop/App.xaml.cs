@@ -38,6 +38,9 @@ namespace steamcito
 
             // Services
             services.AddSingleton<GameService>();
+            services.AddSingleton<PathManager>();
+            services.AddSingleton<SteamService>();
+            services.AddSingleton<GameSessionManager>();
 
             // ViewModels
             services.AddTransient<MainWindowModel>();

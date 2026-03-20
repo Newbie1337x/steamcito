@@ -10,11 +10,12 @@ namespace steamcito.ViewModels;
 public partial class MainWindowModel : ObservableObject
 {
     private readonly GameService _gameService;
-    private readonly PathManager _pathManager = new();
+    private readonly PathManager _pathManager;
 
-    public MainWindowModel(GameService gameService)
+    public MainWindowModel(GameService gameService, PathManager pathManager)
     {
         _gameService = gameService;
+        _pathManager = pathManager;
     }
 
     [RelayCommand]

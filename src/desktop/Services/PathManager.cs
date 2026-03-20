@@ -9,11 +9,6 @@ namespace steamcito.Services;
 
 public class PathManager
 {
-    
-    
-    
-    
-
     public void CreateShortcut(string exePath, string exeName)
     {
         if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
@@ -123,6 +118,7 @@ public class PathManager
             .EnumerateFiles(path, fileName, SearchOption.AllDirectories)
             .FirstOrDefault();
     }
+    
 
 
     private bool IsValidSignature(string filePath)
@@ -167,4 +163,13 @@ public class PathManager
             return false;
         }
     }
+    
+    private bool ExistsPath(string path)
+    {
+        return Directory.Exists(path) || File.Exists(path);
+    }
+    
+    
+    
+    
 }

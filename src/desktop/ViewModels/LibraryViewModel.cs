@@ -14,15 +14,17 @@ namespace steamcito.ViewModels
     public partial class LibraryViewModel : ObservableObject, IRecipient<GameAddedMessage>
     {
         private readonly GameService _gameService;
-        private readonly GameSessionManager _gameSessionManager = new();
-        private readonly PathManager _pathManager = new();
+        private readonly GameSessionManager _gameSessionManager;
+        private readonly PathManager _pathManager;
         
         [ObservableProperty] private ObservableCollection<Game> _games = new();
         [ObservableProperty] private Game? _selectedGame;
         
-        public LibraryViewModel(GameService gameService)
+        public LibraryViewModel(GameService gameService, GameSessionManager gameSessionManager, PathManager pathManager)
         {
             _gameService = gameService;
+            _gameSessionManager = gameSessionManager;
+            _pathManager = pathManager;
             LoadGames();
             WeakReferenceMessenger.Default.Register(this);
 
