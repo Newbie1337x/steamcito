@@ -9,6 +9,7 @@
                 
                 <ResourceDictionary Source="Styles/WindowStyle.xaml"/>
                 <ResourceDictionary Source="Styles/ContextMenuStyles.xaml"/>
+                <ResourceDictionary Source="Styles/ScrollbarStyle.xaml"/>
                 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
