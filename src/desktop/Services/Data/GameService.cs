@@ -27,6 +27,10 @@ public class GameService
 
     public void SaveGame(Game game)
     {
+        if (game.GamePaths != null) game.GamePaths.Game = game;
+        if (game.Details != null) game.Details.Game = game;
+        if (game.Artworks != null) game.Artworks.Game = game;
+
         _context.Games.Add(game);
         _context.SaveChanges();
     }

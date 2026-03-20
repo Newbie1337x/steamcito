@@ -109,9 +109,9 @@ public class PathManager
         return new DllDetectionResults();
     }
 
-    private string? SearchFile(string path, string fileName)
+    public string? SearchFile(string path, string fileName)
     {
-        if (!Directory.Exists(path))
+        if (!ExistsPath(path))
             return null;
 
         return Directory

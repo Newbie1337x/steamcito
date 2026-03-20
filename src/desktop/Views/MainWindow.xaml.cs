@@ -99,6 +99,11 @@ namespace steamcito.Views
             _mainWindowModel.AddGameCommand.Execute(null);
         }
 
+        private void ScanSteam_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindowModel.ScanSteamGamesCommand.Execute(null);
+        }
+
         private void LibraryButton_Click(object sender, RoutedEventArgs e)
         {
             if(LibraryViewControl.Visibility == Visibility.Visible) return;

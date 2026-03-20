@@ -15,6 +15,8 @@ public partial class Game : ObservableObject
     [ObservableProperty]
     private bool _isRunning;
     
+    public LaunchMode LaunchMode { get; set; }
+    
     public GameDetails Details { get; set; } = new();
 
     public GamePaths? GamePaths { get; set; }

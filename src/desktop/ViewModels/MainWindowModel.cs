@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using steamcito.Services;
@@ -11,11 +12,13 @@ public partial class MainWindowModel : ObservableObject
 {
     private readonly GameService _gameService;
     private readonly PathManager _pathManager;
+    private readonly SteamService _steamService;
 
-    public MainWindowModel(GameService gameService, PathManager pathManager)
+    public MainWindowModel(GameService gameService, PathManager pathManager, SteamService steamService)
     {
         _gameService = gameService;
         _pathManager = pathManager;
+        _steamService = steamService;
     }
 
     [RelayCommand]
@@ -62,6 +65,22 @@ public partial class MainWindowModel : ObservableObject
         
         // Notificar que se agregó un juego
         WeakReferenceMessenger.Default.Send(new GameAddedMessage(nuevoJuego));
+    }
+
+    [RelayCommand]
+    private void ScanSteamGames()
+    {
+        var steamGames = _steamService.GetAllSteamGames();
+
+        foreach (var steamGame in steamGames)
+        {
+            Debug.WriteLine($"Steam gameS found:"+ steamGames.Length);
+            // Guardar el juego
+            _gameService.SaveGame(steamGame);
+            
+            // Notificar que se agregó un juego
+            WeakReferenceMessenger.Default.Send(new GameAddedMessage(steamGame));
+        }
     }
 }
 
