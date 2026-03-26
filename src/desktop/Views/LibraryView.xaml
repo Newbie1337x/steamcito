@@ -49,10 +49,8 @@
                      Text="Search..."/>
 
             <!-- LISTA DE JUEGOS -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
-                          Background="Transparent"
-                          BorderThickness="1">
-                <ListBox ItemsSource="{Binding Games}" 
+                <ListBox Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ItemsSource="{Binding Games}" 
                          SelectedItem="{Binding SelectedGame}"
                          Background="Transparent"
                          BorderThickness="0"
@@ -180,7 +178,6 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-            </ScrollViewer>
         </Grid>
 
         <!-- ===================== -->
