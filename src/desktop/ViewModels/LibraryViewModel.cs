@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using steamcito.Services;
@@ -11,7 +11,7 @@ using Application = System.Windows.Application;
 
 namespace steamcito.ViewModels
 {
-    public partial class LibraryViewModel : ObservableObject, IRecipient<GameAddedMessage>
+    public partial class LibraryViewModel : ObservableObject, IRecipient<GameAddedMessage>, IRecipient<GamesReloadedMessage>
     {
         private readonly GameService _gameService;
         private readonly GameSessionManager _gameSessionManager;
@@ -26,7 +26,8 @@ namespace steamcito.ViewModels
             _gameSessionManager = gameSessionManager;
             _pathManager = pathManager;
             LoadGames();
-            WeakReferenceMessenger.Default.Register(this);
+            WeakReferenceMessenger.Default.Register<GameAddedMessage>(this);
+            WeakReferenceMessenger.Default.Register<GamesReloadedMessage>(this);
 
             _gameSessionManager.OnGameClosed += (game, playTime) =>
             {
@@ -47,6 +48,14 @@ namespace steamcito.ViewModels
             {
                 SelectedGame = message.Game;
             }
+        }
+
+        public void Receive(GamesReloadedMessage message)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                LoadGames();
+            });
         }
 
         private void LoadGames()

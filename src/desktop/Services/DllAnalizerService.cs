@@ -57,7 +57,7 @@ public class DllAnalizerService
 
     private static bool IsTargetDll(string fileName)
     {
-        return fileName.StartsWith("steam_api", StringComparison.OrdinalIgnoreCase) ||
+        return fileName.Contains("steam_api", StringComparison.OrdinalIgnoreCase) ||
                fileName.StartsWith("EOSSDK", StringComparison.OrdinalIgnoreCase) ||
                fileName.StartsWith("uplay_r1_loader", StringComparison.OrdinalIgnoreCase) ||
                fileName.StartsWith("Origin.dll", StringComparison.OrdinalIgnoreCase);
@@ -67,7 +67,7 @@ public class DllAnalizerService
     {
         string fileName = Path.GetFileName(filePath);
 
-        if (fileName.StartsWith("steam_api", StringComparison.OrdinalIgnoreCase))
+        if (fileName.Contains("steam_api", StringComparison.OrdinalIgnoreCase))
             return StoreType.Steam;
 
         if (fileName.StartsWith("EOSSDK", StringComparison.OrdinalIgnoreCase))

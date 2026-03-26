@@ -35,22 +35,50 @@ public class GameService
         _context.SaveChanges();
     }
 
-    public Game? GetBySteamId(string steamId) => _context.Games.FirstOrDefault(g => g.Details.SteamId == steamId);
+    public Game? GetBySteamId(string steamId) => _context.Games
+        .Include(g => g.Details)
+        .Include(g => g.GamePaths)
+        .ThenInclude(gp => gp.Dlls)
+        .Include(g => g.Artworks)
+        .FirstOrDefault(g => g.Details.SteamId == steamId);
     
     public void Upsert(Game game)
     {
+        if (game.Details?.SteamId == null) return;
+        
         var existing = GetBySteamId(game.Details.SteamId);
 
         if (existing != null)
         {
             existing.Details.Title = game.Details.Title;
-            existing.GamePaths.FolderPath = game.GamePaths.FolderPath;
-            existing.GamePaths.Dlls = game.GamePaths.Dlls;
-            existing.Artworks.Grid = game.Artworks.Grid;
-            existing.Artworks.Hero = game.Artworks.Hero;
-            existing.Artworks.Logo = game.Artworks.Logo;
-            existing.Artworks.Icon = game.Artworks.Icon;
-            
+            if (existing.GamePaths != null && game.GamePaths != null)
+            {
+                existing.GamePaths.FolderPath = game.GamePaths.FolderPath;
+
+                // Clear existing Dlls to avoid duplication on rescan
+                existing.GamePaths.Dlls ??= new List<GameDll>();
+                existing.GamePaths.Dlls.Clear();
+                if (game.GamePaths.Dlls != null)
+                {
+                    foreach (var dll in game.GamePaths.Dlls)
+                    {
+                        existing.GamePaths.Dlls.Add(new GameDll
+                        {
+                            RelativePath = dll.RelativePath,
+                            Role = dll.Role,
+                            GamePathsId = existing.GamePaths.Id
+                        });
+                    }
+                }
+            }
+
+            if (existing.Artworks != null && game.Artworks != null)
+            {
+                existing.Artworks.Grid = game.Artworks.Grid;
+                existing.Artworks.Hero = game.Artworks.Hero;
+                existing.Artworks.Logo = game.Artworks.Logo;
+                existing.Artworks.Icon = game.Artworks.Icon;
+            }
 
             _context.Games.Update(existing);
 

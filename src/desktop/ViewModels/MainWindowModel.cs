@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -68,8 +68,9 @@ public partial class MainWindowModel : ObservableObject
     private void ScanSteamGames()
     {
         _steamService.ScanAndSaveSteamGames();
-
+        WeakReferenceMessenger.Default.Send(new GamesReloadedMessage());
     }
 }
 
 public record GameAddedMessage(Game Game);
+public record GamesReloadedMessage();

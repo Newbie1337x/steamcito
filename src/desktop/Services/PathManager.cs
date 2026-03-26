@@ -49,7 +49,10 @@ public class PathManager
         if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
             return (detectedStore, results);
         
-        var allFiles = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
+        var allFiles = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
+            .OrderBy(f => Path.GetFileName(f).Length)
+            .ThenBy(f => f)
+            .ToList();
         DllAnalizerConfig config= new DllAnalizerConfig() { CheckStore = true, CheckSignature = true };
 
         foreach (var filePath in allFiles)
@@ -63,16 +66,16 @@ public class PathManager
                     config.CheckStore = false;
                 }
 
-                if (analysis.Role == DllRole.Original)
-                {
-                    config.CheckSignature = false;
-                }
-
                 results.Add(new GameDll()
                 {
                     RelativePath = Path.GetRelativePath(path, filePath),
                     Role = analysis.Role ?? DllRole.GenericFix,
                 });
+
+                if (analysis.Role == DllRole.Original)
+                {
+                    config.CheckSignature = false;
+                }
             }
         }
 
