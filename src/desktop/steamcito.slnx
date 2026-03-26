@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="steamcito.csproj" />
+  <Project Path="..\steamcito.Core\steamcito.Core.csproj" />
+  <Project Path="..\steamcito.Infrastructure\steamcito.Infrastructure.csproj" />
+  <Project Path="..\steamcito.Integrations\steamcito.Integrations.csproj" />
 </Solution>

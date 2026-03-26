@@ -11,3 +11,9 @@ src/desktop/.vs/CopilotSnapshots/
 src/desktop/.vs/steamcito/CopilotIndices/
 src/desktop/.vs/steamcito.slnx
 /.idea
+/src/steamcito.Infrastructure/obj
+/src/steamcito.Integrations/obj
+/src/steamcito.Integrations/bin/Debug
+/src/steamcito.Infrastructure/bin
+/src/steamcito.Core/obj
+/src/steamcito.Core/bin

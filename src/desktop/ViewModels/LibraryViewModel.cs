@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using steamcito.Views;
+using steamcito.Core.Interfaces;
 using Application = System.Windows.Application;
 
 namespace steamcito.ViewModels
@@ -16,15 +17,17 @@ namespace steamcito.ViewModels
         private readonly GameService _gameService;
         private readonly GameSessionManager _gameSessionManager;
         private readonly PathManager _pathManager;
+        private readonly IEightBitFiestaService _eightBitFiestaService;
         
         [ObservableProperty] private ObservableCollection<Game> _games = new();
         [ObservableProperty] private Game? _selectedGame;
         
-        public LibraryViewModel(GameService gameService, GameSessionManager gameSessionManager, PathManager pathManager)
+        public LibraryViewModel(GameService gameService, GameSessionManager gameSessionManager, PathManager pathManager, IEightBitFiestaService eightBitFiestaService)
         {
             _gameService = gameService;
             _gameSessionManager = gameSessionManager;
             _pathManager = pathManager;
+            _eightBitFiestaService = eightBitFiestaService;
             LoadGames();
             WeakReferenceMessenger.Default.Register<GameAddedMessage>(this);
             WeakReferenceMessenger.Default.Register<GamesReloadedMessage>(this);
@@ -131,6 +134,13 @@ namespace steamcito.ViewModels
                 DataContext = viewModel
             };
             view.ShowDialog();
+        }
+        
+        [RelayCommand]
+        private async Task SetupEightBitFiesta(Game game)
+        {
+            if (game == null) return;
+            await _eightBitFiestaService.SetupAsync(game);
         }
         
     }

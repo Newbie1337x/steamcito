@@ -1,9 +1,8 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using steamcito.Core.Interfaces;
 using steamcito.Data;
+using steamcito.Integrations.EightBitFiesta;
 using steamcito.Services;
 using steamcito.ViewModels;
 
@@ -41,6 +40,7 @@ namespace steamcito
             services.AddSingleton<PathManager>();
             services.AddSingleton<SteamService>();
             services.AddSingleton<GameSessionManager>();
+            services.AddSingleton<IEightBitFiestaService, EightBitFiestaService>();
 
             // ViewModels
             services.AddTransient<MainWindowModel>();

@@ -11,20 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AuthenticodeExaminer" Version="0.4.0" />
+    <ProjectReference Include="..\steamcito.Core\steamcito.Core.csproj" />
+    <ProjectReference Include="..\steamcito.Infrastructure\steamcito.Infrastructure.csproj" />
+    <ProjectReference Include="..\steamcito.Integrations\steamcito.Integrations.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Interop.IWshRuntimeLibrary" Version="1.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3800.47" />
-    <PackageReference Include="Refit" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
   </ItemGroup>
 
