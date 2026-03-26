@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
 using steamcito.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +18,14 @@ namespace steamcito.Views
             {
                 DataContext = App.ServiceProvider.GetRequiredService<LibraryViewModel>();
             }
+        }
+        
+        private void MainScroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            double initialTopMargin = 300;
+            double newTopPosition = Math.Max(0, initialTopMargin - MainScroll.VerticalOffset);
+            
+            StickyButtonsPanel.Margin = new Thickness(0, newTopPosition, 0, 0);
         }
     }
 }

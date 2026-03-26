@@ -183,47 +183,86 @@
         <!-- ===================== -->
         <!-- MAIN CONTENT -->
         <!-- ===================== -->
-        <Grid Grid.Column="1">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="300"/> <!-- HEADER -->
-                <RowDefinition Height="Auto"/> <!-- BOTONES -->
-                <RowDefinition Height="*"/> <!-- INFO -->
-            </Grid.RowDefinitions>
-
-            <!-- HEADER (imagen grande del juego) -->
-            <Grid Grid.Row="0">
+        <Grid Grid.Column="1" Background="#1B2838">
+            
+            <ScrollViewer x:Name="MainScroll"
+                          ScrollChanged="MainScroll_ScrollChanged"
+                          VerticalScrollBarVisibility="Auto"
+                          BorderThickness="0">
                 
-                <Image Source="/Assets/header.jpg"
-                       Stretch="UniformToFill"/>
+                <StackPanel>
+                    <Grid x:Name="BannerArea" Height="300" Background="#10141B">
+                        <Image Source="/Assets/header.jpg" Stretch="UniformToFill"/>
+                        <Rectangle>
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#00000000" Offset="0.5"/>
+                                    <GradientStop Color="#CC1B2838" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <TextBlock Text="{Binding SelectedGame.Details.Title}"
+                                   Foreground="White" FontSize="48" FontWeight="Bold"
+                                   Margin="30,0,0,0" VerticalAlignment="Bottom">
+                            <TextBlock.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.8"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </Grid>
 
-                <!-- Overlay oscuro gradual -->
-                <Rectangle>
-                    <Rectangle.Fill>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                            <GradientStop Color="#00000000" Offset="0.5"/>
-                            <GradientStop Color="#CC1B2838" Offset="1.0"/>
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
+                    <Grid Margin="30,80,30,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="300"/>
+                        </Grid.ColumnDefinitions>
 
-                <!-- Título -->
-                <TextBlock Text="{Binding SelectedGame.Details.Title}"
-                           Foreground="White"
-                           FontSize="48"
-                           FontWeight="Bold"
-                           Margin="30,0,0,30"
-                           VerticalAlignment="Bottom">
-                    <TextBlock.Effect>
-                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.8"/>
-                    </TextBlock.Effect>
-                </TextBlock>
-            </Grid>
+                        <StackPanel>
+                            <TextBlock Text="About the game" Foreground="#66C0F4" FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
+                            <Border Background="#171A21" CornerRadius="5" Padding="20" MinHeight="200">
+                                <TextBlock Text="{Binding SelectedGame.Details.Description, FallbackValue='No description available for this game.'}"
+                                           Foreground="White" FontSize="14" TextWrapping="Wrap"/>
+                            </Border>
+                        </StackPanel>
 
-            <!-- BOTONES -->
-            <Border Grid.Row="1" Background="#1B2838" BorderBrush="#2A475E" BorderThickness="0,0,0,1">
-                <StackPanel Orientation="Horizontal" Margin="30,15">
+                        <StackPanel Grid.Column="1" Margin="30,0,0,0">
+                            <TextBlock Text="Details" Foreground="#66C0F4" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                            
+                            <StackPanel Margin="0,5">
+                                <TextBlock Text="PLAYED TIME" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding SelectedGame.Details.PlayTime, StringFormat=\{0:hh\\:mm\} hs}" Foreground="White" FontSize="14"/>
+                            </StackPanel>
 
+                            <StackPanel Margin="0,10">
+                                <TextBlock Text="LAST SESSION" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding SelectedGame.Details.LastTime, StringFormat=\{0:dd/MM/yyyy\}, FallbackValue='Never'}" Foreground="White" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,10">
+                                <TextBlock Text="STORE" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding SelectedGame.Details.Store,FallbackValue='Other'}" Foreground="White" FontSize="14"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,10">
+                                <TextBlock Text="HAS ORIGINAL DLL" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding SelectedGame.Details.IsSigned}" Foreground="White" FontSize="14"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border x:Name="StickyButtonsPanel" 
+                    Background="Transparent" 
+                    BorderBrush="#2A475E" 
+                    BorderThickness="0,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Height="60"
+                    Margin="0,250,0,0">
+                
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Margin="20,0"
+                            VerticalAlignment="Center">
+                    
                     <Button x:Name="PlayButton" 
                             Width="160"
                             Height="45"
@@ -233,30 +272,29 @@
                             BorderThickness="0"
                             Cursor="Hand"
                             Command="{Binding PlayGameCommand}"
-                            CommandParameter="{Binding SelectedGame}">
-                        <Button.Style>
+                            CommandParameter="{Binding SelectedGame}"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center">
+                        
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="6"></Setter>
+                            </Style>
+                            
                             <Style TargetType="Button">
-                                <Setter Property="Content" Value="Play"/>
+                                <Setter Property="Content" Value="▶ PLAY"/>
                                 <Setter Property="Background" Value="#3d922e"/>
-                                <Setter Property="OverridesDefaultStyle" Value="True"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="3">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
+                                
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SelectedGame.IsRunning}" Value="True">
-                                        <Setter Property="Content" Value="Stop"/>
+                                        <Setter Property="Content" Value="◼ Stop"/>
                                         <Setter Property="Background" Value="#A03131"/>
                                     </DataTrigger>
                                     
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background" Value="#55c03d"/>
                                     </Trigger>
+                                    
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
@@ -270,7 +308,7 @@
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
-                        </Button.Style>
+                        </Button.Resources>
                     </Button>
 
                     <Button Content="⚙"
@@ -286,68 +324,12 @@
                             CommandParameter="{Binding SelectedGame}">
                         <Button.Resources>
                             <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="3"/>
+                                <Setter Property="CornerRadius" Value="9"/>
                             </Style>
                         </Button.Resources>
                     </Button>
                 </StackPanel>
             </Border>
-
-            <!-- INFO -->
-            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Visible">
-                <Grid Margin="30">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="300"/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- PANEL IZQUIERDO -->
-                    <StackPanel>
-                        <TextBlock Text="About the game"
-                                   Foreground="#66C0F4"
-                                   FontSize="20"
-                                   FontWeight="Bold"
-                                   Margin="0,0,0,15"/>
-
-                        <Border Background="#171A21"
-                                CornerRadius="5"
-                                Padding="20"
-                                MinHeight="200">
-                            <TextBlock Text="{Binding SelectedGame.Details.Description, FallbackValue='No description available for this game.'}"
-                                       Foreground="White"
-                                       FontSize="14"
-                                       TextWrapping="Wrap"/>
-                        </Border>
-                    </StackPanel>
-
-                    <!-- PANEL DERECHO -->
-                    <StackPanel Grid.Column="1" Margin="30,0,0,0">
-                        <TextBlock Text="Details"
-                                   Foreground="#66C0F4"
-                                   FontSize="18"
-                                   FontWeight="Bold"
-                                   Margin="0,0,0,10"/>
-                        
-                        <StackPanel Margin="0,5">
-                            <TextBlock Text="PLAYED TIME" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding SelectedGame.Details.PlayTime, StringFormat=\{0:hh\\:mm\} hs}" Foreground="White" FontSize="14"/>
-                        </StackPanel>
-
-                        <StackPanel Margin="0,10">
-                            <TextBlock Text="LAST SESSION" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding SelectedGame.Details.LastTime, StringFormat=\{0:dd/MM/yyyy\}, FallbackValue='Never'}" Foreground="White" FontSize="14"/>
-                        </StackPanel>
-                        <StackPanel Margin="0,10">
-                            <TextBlock Text="STORE" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding SelectedGame.Details.Store,FallbackValue='Other'}" Foreground="White" FontSize="14"/>
-                        </StackPanel>
-                        <StackPanel Margin="0,10">
-                            <TextBlock Text="HAS ORIGINAL DLL" Foreground="#8F98A0" FontSize="11" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding SelectedGame.Details.IsSigned}" Foreground="White" FontSize="14"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Grid>
-            </ScrollViewer>
         </Grid>
     </Grid>
 </UserControl>
