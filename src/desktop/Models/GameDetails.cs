@@ -26,13 +26,9 @@ public partial class GameDetails : ObservableObject
     public DateTime? ReleaseDate { get; set; }
     [ObservableProperty] 
     private TimeSpan _playTime;
-
-    [ObservableProperty]
-    private bool _isSigned;
-    
     [ObservableProperty]
     private DateTime _lastTime;
-    public StoreType Store { get; set; }
+    public StoreType? Store { get; set; }
     public string? Platform { get; set; }
     public bool IsInstalled { get; set; }
     public DateTime AddedAt { get; set; }

@@ -35,6 +35,36 @@ public class GameService
         _context.SaveChanges();
     }
 
+    public Game? GetBySteamId(string steamId) => _context.Games.FirstOrDefault(g => g.Details.SteamId == steamId);
+    
+    public void Upsert(Game game)
+    {
+        var existing = GetBySteamId(game.Details.SteamId);
+
+        if (existing != null)
+        {
+            existing.Details.Title = game.Details.Title;
+            existing.GamePaths.FolderPath = game.GamePaths.FolderPath;
+            existing.GamePaths.Dlls = game.GamePaths.Dlls;
+            existing.Artworks.Grid = game.Artworks.Grid;
+            existing.Artworks.Hero = game.Artworks.Hero;
+            existing.Artworks.Logo = game.Artworks.Logo;
+            existing.Artworks.Icon = game.Artworks.Icon;
+            
+
+            _context.Games.Update(existing);
+
+            Console.WriteLine($"[DB] Updated: {existing.Details.Title}");
+        }
+        else
+        {
+            _context.Games.Add(game);
+
+            Console.WriteLine($"[DB] Inserted: {game.Details.Title}");
+        }
+
+        _context.SaveChanges();
+    }
 
     public List<Game> GetAll() => _context.Games
         .Include(g => g.Details)
@@ -43,8 +73,12 @@ public class GameService
         .ToList();
     public Game? GetById(string id) => _context.Games.Find(id);
     
-    public Game SaveNewGame(string title, string folderPath, string exePath, DllDetectionResults dllResults)
+    public bool existBySteamId(string steamId) => _context.Games.Any(g => g.Details.SteamId == steamId);
+    
+    
+    public Game SaveNewGame(string title, string folderPath, string exePath)
     {
+        var dllResults = PathManager.FindDlls(folderPath);
        
         var game = new Game
         {
@@ -53,8 +87,7 @@ public class GameService
                 Title = title,
                 AddedAt = DateTime.Now,
                 IsInstalled = true,
-                Store = dllResults.StoreType,
-                IsSigned = dllResults.IsSigned,
+                Store = dllResults.Store ?? StoreType.Other,
                 
             }
         };
@@ -64,8 +97,8 @@ public class GameService
             GameId = game.Id,
             Game = game,
             FolderPath = folderPath,
-            ExePath = exePath,
-            DllPath = dllResults.FilePath,
+            ExeRelativePath = exePath,
+            Dlls = dllResults.Dlls,
         };
         
         var artwork = new Artwork

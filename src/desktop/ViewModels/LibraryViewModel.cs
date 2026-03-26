@@ -63,7 +63,7 @@ namespace steamcito.ViewModels
         [RelayCommand]
         private void PlayGame(Game game)
         {
-            if (game.GamePaths?.ExePath == null)
+            if (game.GamePaths == null || (string.IsNullOrEmpty(game.GamePaths.ExeRelativePath) && string.IsNullOrEmpty(game.Details.SteamId)))
                 return;
 
             if (!game.IsRunning)
@@ -79,10 +79,10 @@ namespace steamcito.ViewModels
         [RelayCommand]
         private void CreateShortcut(Game game)
         {
-            if (game.GamePaths?.ExePath == null )
+            if (game.GamePaths?.ExeRelativePath == null )
                 return;
             
-           _pathManager.CreateShortcut(game.GamePaths.ExePath, game.Details.Title);
+           _pathManager.CreateShortcut(game.GamePaths.ExeFullPath, game.Details.Title);
         }
 
         [RelayCommand]

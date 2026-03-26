@@ -4,16 +4,15 @@ using steamcito.Models;
 using steamcito.Models.Enum;
 using Timer = System.Timers.Timer;
 
-
 namespace steamcito.Services;
 
 public class GameSessionManager
 {
-    private Process? _trackedProcess;
+    private List<Process> _trackedProcesses = new();
     private Timer? _detectionTimer;
     private DateTime _startTime;
-    private string _processName = "";
     private Game? _currentGame;
+    private string? _gameFolder;
 
     public event Action<Game>? OnGameLaunching;
     public event Action<Game>? OnGameStarted;
@@ -24,10 +23,8 @@ public class GameSessionManager
         if (game.IsRunning) return;
 
         _currentGame = game;
-        _currentGame.IsRunning = true;
-        _processName = Path.GetFileNameWithoutExtension(game.GamePaths.ExePath);
-        
-       //capturing time before start the timer asserting race conditions.
+        _gameFolder = game.GamePaths.FolderPath;
+
         var launchTime = DateTime.Now.AddSeconds(-1);
         _startTime = DateTime.Now;
 
@@ -35,21 +32,36 @@ public class GameSessionManager
 
         try
         {
-            var process = Process.Start(new ProcessStartInfo
+            if (game.Details.Store == StoreType.Steam && !string.IsNullOrEmpty(game.Details.SteamId))
             {
-                FileName = game.GamePaths.ExePath,
-                UseShellExecute = true,
-                WorkingDirectory = Path.GetDirectoryName(game.GamePaths.ExePath)
-            });
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = $"steam://rungameid/{game.Details.SteamId}",
+                    UseShellExecute = true
+                });
 
-            if (process != null)
+                StartDetection(launchTime);
+            }
+            else if (!string.IsNullOrEmpty(game.GamePaths.ExeRelativePath))
             {
-                //if the process is a game attach directly 
-                AttachToProcess(process);
+                var process = Process.Start(new ProcessStartInfo
+                {
+                    FileName = game.GamePaths.ExeFullPath,
+                    UseShellExecute = true,
+                    WorkingDirectory = Path.GetDirectoryName(game.GamePaths.ExeFullPath)
+                });
+
+                if (process != null)
+                {
+                    AttachToProcesses(new List<Process> { process });
+                }
+                else
+                {
+                    StartDetection(launchTime);
+                }
             }
             else
             {
-                //if not return a process search by name
                 StartDetection(launchTime);
             }
         }
@@ -66,21 +78,24 @@ public class GameSessionManager
 
         try
         {
-            if (_trackedProcess != null && !_trackedProcess.HasExited)
+            if (_currentGame.Details.Store != StoreType.Steam)
             {
-                _trackedProcess.Kill();
+                foreach (var p in _trackedProcesses)
+                {
+                    try
+                    {
+                        if (!p.HasExited)
+                            p.Kill();
+                    }
+                    catch { }
+                }
             }
-            
-            _detectionTimer?.Stop();
-            _detectionTimer?.Dispose();
-            _detectionTimer = null;
 
-            if (_currentGame != null)
-            {
-                _currentGame.IsRunning = false;
-                OnGameClosed?.Invoke(_currentGame, TimeSpan.Zero);
-                _currentGame = null;
-            }
+            Cleanup();
+
+            _currentGame.IsRunning = false;
+            OnGameClosed?.Invoke(_currentGame, TimeSpan.Zero);
+            _currentGame = null;
         }
         catch (Exception ex)
         {
@@ -88,85 +103,168 @@ public class GameSessionManager
         }
     }
 
-    private void CancelLaunching()
-    {
-        StopGame();
-    }
-
     private void StartDetection(DateTime launchTime)
     {
-        _detectionTimer = new Timer(2000); 
+        _detectionTimer = new Timer(1500);
+        int attempts = 0;
+
         _detectionTimer.Elapsed += (s, e) =>
         {
             try
             {
-                var processes = Process.GetProcessesByName(_processName)
-                    .Where(p =>
-                    {
-                        try
-                        {
-                            // searching for the process right after o later.
-                            return p.StartTime >= launchTime;
-                        }
-                        catch
-                        {
-                            return false;
-                        }
-                    })
-                    .OrderByDescending(p => p.StartTime)
-                    .ToList();
+                attempts++;
 
-                if (processes.Any())
+                var all = Process.GetProcesses();
+                var byFolder = all.Where(p =>
                 {
-                    AttachToProcess(processes.First());
+                    try
+                    {
+                        if (p.HasExited) return false;
+                        if (p.StartTime < launchTime) return false;
+
+                        var path = p.MainModule?.FileName;
+                        if (path == null) return false;
+
+                        return _gameFolder != null &&
+                               path.IndexOf(_gameFolder, StringComparison.OrdinalIgnoreCase) >= 0;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }).ToList();
+
+                if (byFolder.Any())
+                {
+                    Debug.WriteLine($"[DETECT] Folder match: {byFolder.Count}");
+                    AttachToProcesses(byFolder);
+                    return;
+                }
+                
+                var byTime = all.Where(p =>
+                {
+                    try
+                    {
+                        if (p.HasExited) return false;
+                        return p.StartTime >= launchTime;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                })
+                .OrderByDescending(p => p.StartTime)
+                .Take(5)
+                .ToList();
+
+                if (byTime.Any())
+                {
+                    Debug.WriteLine($"[DETECT] Time fallback: {byTime.Count}");
+                    AttachToProcesses(byTime);
+                    return;
+                }
+
+                if (attempts == 5)
+                    _detectionTimer.Interval = 3000;
+
+                if (attempts > 20)
+                {
+                    Debug.WriteLine("[DETECT] Timeout");
+                    CancelLaunching();
                 }
             }
-            catch
-            {
-                //ignore access violations 
-                //TODO impl
-            }
+            catch { }
         };
 
         _detectionTimer.Start();
     }
 
-    private void AttachToProcess(Process process)
+    private void AttachToProcesses(List<Process> processes)
     {
         if (_currentGame == null) return;
 
-        _trackedProcess = process;
-        _currentGame.IsRunning = true;
-
-        _trackedProcess.EnableRaisingEvents = true;
-        _trackedProcess.Exited += OnProcessExited;
-
-       //if ended before the event
-        if (_trackedProcess.HasExited)
+        foreach (var process in processes)
         {
-            OnProcessExited(_trackedProcess, EventArgs.Empty);
-            return;
+            try
+            {
+                if (_trackedProcesses.Any(p => p.Id == process.Id))
+                    continue;
+
+                process.EnableRaisingEvents = true;
+                process.Exited += OnProcessExited;
+
+                _trackedProcesses.Add(process);
+            }
+            catch { }
+        }
+        
+        if (string.IsNullOrEmpty(_currentGame.GamePaths.ExeRelativePath))
+        {
+            try
+            {
+                var main = processes
+                    .OrderByDescending(p => p.StartTime)
+                    .FirstOrDefault();
+
+                var path = main?.MainModule?.FileName;
+
+                if (!string.IsNullOrEmpty(path))
+                {
+                    _currentGame.GamePaths.ExeRelativePath = path;
+                    Debug.WriteLine($"[AUTO] Exe detected: {path}");
+                }
+            }
+            catch { }
         }
 
-        _detectionTimer?.Stop();
-        _detectionTimer?.Dispose();
-        _detectionTimer = null;
+        if (!_currentGame.IsRunning)
+        {
+            _currentGame.IsRunning = true;
+            OnGameStarted?.Invoke(_currentGame);
+        }
 
-        OnGameStarted?.Invoke(_currentGame);
+        CleanupDetection();
     }
 
     private void OnProcessExited(object? sender, EventArgs e)
     {
-        var playTime = DateTime.Now - _startTime;
-
-        if (_currentGame != null)
+        if (sender is Process p)
         {
+            _trackedProcesses.RemoveAll(x => x.Id == p.Id);
+            try { p.Dispose(); } catch { }
+        }
+
+        if (_trackedProcesses.Count == 0 && _currentGame != null)
+        {
+            var playTime = DateTime.Now - _startTime;
+
             _currentGame.IsRunning = false;
             OnGameClosed?.Invoke(_currentGame, playTime);
             _currentGame = null;
         }
+    }
 
-        _trackedProcess?.Dispose();
-        _trackedProcess = null;
+    private void CleanupDetection()
+    {
+        _detectionTimer?.Stop();
+        _detectionTimer?.Dispose();
+        _detectionTimer = null;
+    }
+
+    private void Cleanup()
+    {
+        CleanupDetection();
+
+        foreach (var p in _trackedProcesses)
+        {
+            try { p.Dispose(); } catch { }
+        }
+
+        _trackedProcesses.Clear();
+    }
+
+    private void CancelLaunching()
+    {
+        StopGame();
     }
 }

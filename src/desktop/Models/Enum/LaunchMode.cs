@@ -5,5 +5,6 @@ public enum LaunchMode
     DirectExe,
     AskEveryTime,
     Launcher,
-    Auto
+    Auto,
+    Store
 }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -11,13 +12,11 @@ namespace steamcito.ViewModels;
 public partial class MainWindowModel : ObservableObject
 {
     private readonly GameService _gameService;
-    private readonly PathManager _pathManager;
     private readonly SteamService _steamService;
 
     public MainWindowModel(GameService gameService, PathManager pathManager, SteamService steamService)
     {
         _gameService = gameService;
-        _pathManager = pathManager;
         _steamService = steamService;
     }
 
@@ -26,7 +25,6 @@ public partial class MainWindowModel : ObservableObject
     {
         string folderPath;
         string exePath = "";
-        DllDetectionResults? dllResults;
 
         
         using (var folderDialog = new FolderBrowserDialog())
@@ -38,7 +36,7 @@ public partial class MainWindowModel : ObservableObject
             folderPath = folderDialog.SelectedPath;
         }
 
-        dllResults = _pathManager.FindStoreDll(folderPath);
+        var dllResults = PathManager.FindDlls(folderPath);
         
 
         Microsoft.Win32.OpenFileDialog fileDialog = new Microsoft.Win32.OpenFileDialog()
@@ -59,28 +57,18 @@ public partial class MainWindowModel : ObservableObject
             return;
         }
 
-        string gameTitle = System.IO.Path.GetFileNameWithoutExtension(exePath);
+        string gameTitle = Path.GetFileName(folderPath);
         
-        var nuevoJuego = _gameService.SaveNewGame(gameTitle, folderPath, exePath,dllResults);
+        var nuevoJuego = _gameService.SaveNewGame(gameTitle, folderPath, exePath);
         
         // Notificar que se agregó un juego
-        WeakReferenceMessenger.Default.Send(new GameAddedMessage(nuevoJuego));
-    }
+        WeakReferenceMessenger.Default.Send(new GameAddedMessage(nuevoJuego)); }
 
     [RelayCommand]
     private void ScanSteamGames()
     {
-        var steamGames = _steamService.GetAllSteamGames();
+        _steamService.ScanAndSaveSteamGames();
 
-        foreach (var steamGame in steamGames)
-        {
-            Debug.WriteLine($"Steam gameS found:"+ steamGames.Length);
-            // Guardar el juego
-            _gameService.SaveGame(steamGame);
-            
-            // Notificar que se agregó un juego
-            WeakReferenceMessenger.Default.Send(new GameAddedMessage(steamGame));
-        }
     }
 }
 

@@ -41,7 +41,7 @@
                  BorderThickness="0"
                  Foreground="White">
 
-                    <ListBoxItem Content="Shortcut" />
+                    <ListBoxItem Content="General" />
                     <ListBoxItem Content="Installed Files"/>
 
 

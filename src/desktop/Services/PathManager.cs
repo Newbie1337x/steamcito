@@ -2,9 +2,10 @@ using System.Diagnostics;
 using System.IO;
 using IWshRuntimeLibrary;
 using steamcito.Models;
-using steamcito.Models.Dtos;
 using File = System.IO.File;
 using AuthenticodeExaminer;
+using steamcito.Models.Dtos;
+using steamcito.Models.Enum;
 namespace steamcito.Services;
 
 public class PathManager
@@ -15,12 +16,9 @@ public class PathManager
             return;
 
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-        // name of shortcut
         string shortcutName = exeName + ".lnk";
         string shortcutPath = Path.Combine(desktopPath, shortcutName);
 
-        //Create shortcut
         var shell = new WshShell();
         IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
 
@@ -33,10 +31,7 @@ public class PathManager
 
     public void OpenFolder(string path)
     {
-        if (path == null)
-            return;
-
-        if (Directory.Exists(path))
+        if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
         {
             Process.Start(new ProcessStartInfo
             {
@@ -45,68 +40,43 @@ public class PathManager
             });
         }
     }
-
-    public DllDetectionResults FindStoreDll(string path)
+    
+    public static (StoreType? Store,List<GameDll> Dlls) FindDlls(string path)
     {
-        var storeDlls = new Dictionary<StoreType, string[]>
+        var results = new List<GameDll>();
+        StoreType? detectedStore = null;
+
+        if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
+            return (detectedStore, results);
+        
+        var allFiles = Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);
+        DllAnalizerConfig config= new DllAnalizerConfig() { CheckStore = true, CheckSignature = true };
+
+        foreach (var filePath in allFiles)
         {
-            [StoreType.Steam] = new[]
+            var analysis = DllAnalizerService.AnalizeDll(filePath, config);
+            if (analysis != null)
             {
-                "steam_api*"
-            },
-            [StoreType.EpicGames] = new[]
-            {
-                "EOSSDK-Win32-Shipping.dll",
-                "EOSSDK-Win64-Shipping.dll"
-            },
-            [StoreType.Origin] = new[]
-            {
-                "uplay_r1_loader.dll",
-                "uplay_r1_loader64.dll",
-                "Origin.dll"
-            }
-        };
-
-        foreach (var store in storeDlls)
-        {
-            var candidates = new List<string>();
-
-            foreach (var dll in store.Value)
-            {
-                var found = Directory
-                    .EnumerateFiles(path, dll, SearchOption.AllDirectories);
-
-                candidates.AddRange(found);
-            }
-
-            foreach (var file in candidates)
-            {
-                if (!IsPortableExecutable(file))
-                    continue;
-
-                if (IsValidSignature(file))
+                if (analysis.StoreType != StoreType.Other && detectedStore == null)
                 {
-                    return new DllDetectionResults()
-                    {
-                        StoreType = store.Key,
-                        FilePath = file,
-                        IsSigned = true
-                    };
+                    detectedStore = analysis.StoreType;
+                    config.CheckStore = false;
                 }
-            }
-            
-            var fallback = candidates.FirstOrDefault();
-            if (fallback != null)
-            {
-                return new DllDetectionResults()
+
+                if (analysis.Role == DllRole.Original)
                 {
-                    StoreType = store.Key,
-                    FilePath = fallback,
-                    IsSigned = false
-                };
+                    config.CheckSignature = false;
+                }
+
+                results.Add(new GameDll()
+                {
+                    RelativePath = Path.GetRelativePath(path, filePath),
+                    Role = analysis.Role ?? DllRole.GenericFix,
+                });
             }
         }
-        return new DllDetectionResults();
+
+        return (detectedStore,results);
     }
 
     public string? SearchFile(string path, string fileName)
@@ -118,58 +88,11 @@ public class PathManager
             .EnumerateFiles(path, fileName, SearchOption.AllDirectories)
             .FirstOrDefault();
     }
-    
 
+ 
 
-    private bool IsValidSignature(string filePath)
-    {
-        try
-        {
-            var inspector = new FileInspector(filePath);
-            var result = inspector.Validate();
-
-            if (result != SignatureCheckResult.Valid)
-                return false;
-
-            var signatures = inspector.GetSignatures();
-            var signature = signatures.FirstOrDefault();
-
-            if (signature == null)
-                return false;
-
-            var cert = signature.SigningCertificate;
-
-            if (cert == null)
-                return false;
-        }
-        catch
-        {
-            return false;
-        }
-        return true;
-    }
-    
-    private bool IsPortableExecutable(string filePath)
-    {
-        try
-        {
-            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            using var reader = new BinaryReader(stream);
-
-            return reader.ReadUInt16() == 0x5A4D; // "MZ"
-        }
-        catch
-        {
-            return false;
-        }
-    }
-    
     private bool ExistsPath(string path)
     {
         return Directory.Exists(path) || File.Exists(path);
     }
-    
-    
-    
-    
 }

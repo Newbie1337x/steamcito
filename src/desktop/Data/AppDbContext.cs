@@ -15,6 +15,7 @@ public class AppDBContext : DbContext
     public DbSet<Artwork> Artworks { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Genre> Genres { get; set; }
+    public DbSet<GameDll> GameDlls { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,7 +25,14 @@ public class AppDBContext : DbContext
         modelBuilder.Entity<Artwork>().ToTable("artworks");
         modelBuilder.Entity<User>().ToTable("users");
         modelBuilder.Entity<Genre>().ToTable("genres");
+        modelBuilder.Entity<GameDll>().ToTable("gamedlls");
 
+        modelBuilder.Entity<GamePaths>()
+            .HasMany(gp => gp.Dlls)
+            .WithOne(dll => dll.GamePaths)
+            .HasForeignKey(dll => dll.GamePathsId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         modelBuilder.Entity<Game>()
             .HasOne(g => g.GamePaths)
             .WithOne(gp => gp.Game)
