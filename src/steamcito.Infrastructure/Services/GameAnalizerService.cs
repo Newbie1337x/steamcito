@@ -1,7 +1,5 @@
 using System.Diagnostics;
-using System.IO;
 using System.Text.Json;
-using AuthenticodeExaminer;
 using steamcito.Helpers;
 using steamcito.Models;
 using steamcito.Models.Dtos;
@@ -9,11 +7,11 @@ using steamcito.Models.Enum;
 
 namespace steamcito.Services;
 
-public class DllAnalizerService
+public class GameAnalizerService
 {
     private readonly RulesConfig _rules;
 
-    public DllAnalizerService(string rulesPath = "rules.json")
+    public GameAnalizerService(string rulesPath = "rules.json")
     {
         var json = File.ReadAllText(rulesPath);
         _rules = JsonSerializer.Deserialize<RulesConfig>(

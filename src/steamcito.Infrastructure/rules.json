@@ -29,6 +29,7 @@
     {
       "role": "OnlineFix",
       "requiresSigned": false,
+      "category": "Wrapper",
       "matchAny": [
         {
           "field": "FileDescription",
@@ -37,11 +38,13 @@
       ],
       "anyFile": [
         "OnlineFix.ini"
-      ]
+      ],
+      "requires": ["RealSteamApi"]
     },
     {
       "role": "Rune",
       "requiresSigned": false,
+      "category": "Emulator",
       "matchAny": [
         {
           "field": "LegalCopyright",
@@ -55,6 +58,7 @@
     {
       "role": "SmokeAPI",
       "requiresSigned": false,
+      "category": "Wrapper",
       "matchAny": [
         {
           "field": "ProductName",
@@ -72,18 +76,22 @@
       "anyFile": [
         "SmokeAPI.*",
         "SmokeAPI.config.json"
-      ]
+      ],
+      "requires": ["RealSteamApi"]
     },
     {
       "role": "CreamAPI",
       "requiresSigned": false,
+      "category": "Wrapper",
       "anyFile": [
         "cream_api.ini"
-      ]
+      ],
+      "requires": ["RealSteamApi"]
     },
     {
       "role": "GoldbergEmu",
       "requiresSigned": false,
+      "category": "Emulator",
       "matchAny": [
         {
           "field": "ProductName",
@@ -98,6 +106,7 @@
     {
       "role": "ScreamAPI",
       "requiresSigned": false,
+      "category": "Wrapper",
       "matchAny": [
         {
           "field": "ProductName",
@@ -106,7 +115,8 @@
       ],
       "anyFile": [
         "ScreamAPI.*"
-      ]
+      ],
+      "requires": ["RealSteamApi"]
     },
     {
       "role": "GenericFix",

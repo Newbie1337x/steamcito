@@ -1,9 +1,7 @@
 using System.Diagnostics;
-using System.IO;
 using IWshRuntimeLibrary;
 using steamcito.Models;
 using File = System.IO.File;
-using AuthenticodeExaminer;
 using steamcito.Models.Dtos;
 using steamcito.Models.Enum;
 namespace steamcito.Services;
@@ -54,7 +52,7 @@ public class PathManager
             .ThenBy(f => f)
             .ToList();
         DllAnalizerConfig config = new DllAnalizerConfig() { CheckStore = true, CheckSignature = true };
-        var analyzer = new DllAnalizerService();
+        var analyzer = new GameAnalizerService();
 
         foreach (var filePath in allFiles)
         {

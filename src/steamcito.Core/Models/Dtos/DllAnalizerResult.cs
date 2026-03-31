@@ -9,5 +9,7 @@ public class DllAnalizerResult
     public string?      RelativePath { get; set; }
     public DllRole?     Role         { get; set; }
     public bool         IsSigned     { get; set; }
+    
+    
     public List<string> ConfigFiles  { get; set; } = [];
-}
+}
