@@ -1,10 +1,25 @@
 {
   "storeRules": [
-    { "contains": "steam_api",       "store": "Steam"     },
-    { "contains": "OnlineFix",       "store": "Steam"     },
-    { "contains": "EOSSDK",          "store": "EpicGames" },
-    { "contains": "uplay_r1_loader", "store": "Uplay"     },
-    { "contains": "Origin",          "store": "Origin"    }
+    {
+      "contains": "steam_api",
+      "store": "Steam"
+    },
+    {
+      "contains": "OnlineFix",
+      "store": "Steam"
+    },
+    {
+      "contains": "EOSSDK",
+      "store": "EpicGames"
+    },
+    {
+      "contains": "uplay_r1_loader",
+      "store": "Uplay"
+    },
+    {
+      "contains": "Origin",
+      "store": "Origin"
+    }
   ],
   "roleRules": [
     {
@@ -15,22 +30,48 @@
       "role": "OnlineFix",
       "requiresSigned": false,
       "matchAny": [
-        { "field": "FileDescription","contains": "Online-Fix Steamclient" }
+        {
+          "field": "FileDescription",
+          "contains": "Online-Fix Steamclient"
+        }
       ],
       "anyFile": [
         "OnlineFix.ini"
       ]
     },
     {
+      "role": "Rune",
+      "requiresSigned": false,
+      "matchAny": [
+        {
+          "field": "LegalCopyright",
+          "contains": "NisCkxU544c"
+        }
+      ],
+      "anyFile": [
+        "steam_emu.ini"
+      ]
+    },
+    {
       "role": "SmokeAPI",
       "requiresSigned": false,
       "matchAny": [
-        { "field": "ProductName",    "contains": "SmokeAPI"                },
-        { "field": "LegalCopyright", "contains": "Fuck the copyright"      },
-        { "field": "FileDescription","contains": "Steamworks DLC unlocker" }
+        {
+          "field": "ProductName",
+          "contains": "SmokeAPI"
+        },
+        {
+          "field": "LegalCopyright",
+          "contains": "Fuck the copyright"
+        },
+        {
+          "field": "FileDescription",
+          "contains": "Steamworks DLC unlocker"
+        }
       ],
       "anyFile": [
-        "SmokeAPI.*"
+        "SmokeAPI.*",
+        "SmokeAPI.config.json"
       ]
     },
     {
@@ -44,15 +85,24 @@
       "role": "GoldbergEmu",
       "requiresSigned": false,
       "matchAny": [
-        { "field": "ProductName",    "contains": "GSE Client API" },
-        { "field": "FileDescription","contains": "GSE Client API" }
+        {
+          "field": "ProductName",
+          "contains": "GSE Client API"
+        },
+        {
+          "field": "FileDescription",
+          "contains": "GSE Client API"
+        }
       ]
     },
     {
       "role": "ScreamAPI",
       "requiresSigned": false,
       "matchAny": [
-        { "field": "ProductName", "contains": "ScreamAPI" }
+        {
+          "field": "ProductName",
+          "contains": "ScreamAPI"
+        }
       ],
       "anyFile": [
         "ScreamAPI.*"

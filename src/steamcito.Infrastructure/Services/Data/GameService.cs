@@ -39,6 +39,7 @@ public class GameService
         .Include(g => g.Details)
         .Include(g => g.GamePaths)
         .ThenInclude(gp => gp.Dlls)
+        .ThenInclude(d => d.Configs)
         .Include(g => g.Artworks)
         .FirstOrDefault(g => g.Details.SteamId == steamId);
     
@@ -66,7 +67,12 @@ public class GameService
                         {
                             RelativePath = dll.RelativePath,
                             Role = dll.Role,
-                            GamePathsId = existing.GamePaths.Id
+                            GamePathsId = existing.GamePaths.Id,
+                            Configs = dll.Configs?.Select(c => new GameDllConfig
+                            {
+                                FileName = c.FileName,
+                                RelativePath = c.RelativePath
+                            }).ToList() ?? new List<GameDllConfig>()
                         });
                     }
                 }
@@ -97,6 +103,8 @@ public class GameService
     public List<Game> GetAll() => _context.Games
         .Include(g => g.Details)
         .Include(g => g.GamePaths)
+        .ThenInclude(gp => gp.Dlls)
+        .ThenInclude(d => d.Configs)
         .Include(g => g.Artworks)
         .ToList();
     public Game? GetById(string id) => _context.Games.Find(id);

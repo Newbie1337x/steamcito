@@ -10,4 +10,5 @@ public enum DllRole
     ScreamAPI,
     GenericFix,
     OnlineFix,
+    Rune,
 }
