@@ -1,0 +1,66 @@
+{
+  "storeRules": [
+    { "contains": "steam_api",       "store": "Steam"     },
+    { "contains": "OnlineFix",       "store": "Steam"     },
+    { "contains": "EOSSDK",          "store": "EpicGames" },
+    { "contains": "uplay_r1_loader", "store": "Uplay"     },
+    { "contains": "Origin",          "store": "Origin"    }
+  ],
+  "roleRules": [
+    {
+      "role": "Original",
+      "requiresSigned": true
+    },
+    {
+      "role": "OnlineFix",
+      "requiresSigned": false,
+      "matchAny": [
+        { "field": "FileDescription","contains": "Online-Fix Steamclient" }
+      ],
+      "anyFile": [
+        "OnlineFix.ini"
+      ]
+    },
+    {
+      "role": "SmokeAPI",
+      "requiresSigned": false,
+      "matchAny": [
+        { "field": "ProductName",    "contains": "SmokeAPI"                },
+        { "field": "LegalCopyright", "contains": "Fuck the copyright"      },
+        { "field": "FileDescription","contains": "Steamworks DLC unlocker" }
+      ],
+      "anyFile": [
+        "SmokeAPI.*"
+      ]
+    },
+    {
+      "role": "CreamAPI",
+      "requiresSigned": false,
+      "anyFile": [
+        "cream_api.ini"
+      ]
+    },
+    {
+      "role": "GoldbergEmu",
+      "requiresSigned": false,
+      "matchAny": [
+        { "field": "ProductName",    "contains": "GSE Client API" },
+        { "field": "FileDescription","contains": "GSE Client API" }
+      ]
+    },
+    {
+      "role": "ScreamAPI",
+      "requiresSigned": false,
+      "matchAny": [
+        { "field": "ProductName", "contains": "ScreamAPI" }
+      ],
+      "anyFile": [
+        "ScreamAPI.*"
+      ]
+    },
+    {
+      "role": "GenericFix",
+      "requiresSigned": false
+    }
+  ]
+}

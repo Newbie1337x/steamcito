@@ -13,4 +13,6 @@ public class GameDll
     
     [ForeignKey("GamePathsId")]
     public GamePaths? GamePaths { get; set; }
+
+    public List<GameDllConfig> Configs { get; set; } = [];
 }

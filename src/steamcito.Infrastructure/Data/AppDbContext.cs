@@ -9,13 +9,14 @@ public class AppDBContext : DbContext
     {
     }
 
-    public DbSet<Game> Games { get; set; }
-    public DbSet<GamePaths> GamePaths { get; set; }
-    public DbSet<GameDetails> GameDetails { get; set; }
-    public DbSet<Artwork> Artworks { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<Genre> Genres { get; set; }
-    public DbSet<GameDll> GameDlls { get; set; }
+    public DbSet<Game>          Games          { get; set; }
+    public DbSet<GamePaths>     GamePaths      { get; set; }
+    public DbSet<GameDetails>   GameDetails    { get; set; }
+    public DbSet<Artwork>       Artworks       { get; set; }
+    public DbSet<User>          Users          { get; set; }
+    public DbSet<Genre>         Genres         { get; set; }
+    public DbSet<GameDll>       GameDlls       { get; set; }
+    public DbSet<GameDllConfig> GameDllConfigs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,11 +27,18 @@ public class AppDBContext : DbContext
         modelBuilder.Entity<User>().ToTable("users");
         modelBuilder.Entity<Genre>().ToTable("genres");
         modelBuilder.Entity<GameDll>().ToTable("gamedlls");
+        modelBuilder.Entity<GameDllConfig>().ToTable("gamedllconfigs");
 
         modelBuilder.Entity<GamePaths>()
             .HasMany(gp => gp.Dlls)
             .WithOne(dll => dll.GamePaths)
             .HasForeignKey(dll => dll.GamePathsId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<GameDll>()
+            .HasMany(d => d.Configs)
+            .WithOne(c => c.GameDll)
+            .HasForeignKey(c => c.GameDllId)
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Game>()

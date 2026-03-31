@@ -53,11 +53,12 @@ public class PathManager
             .OrderBy(f => Path.GetFileName(f).Length)
             .ThenBy(f => f)
             .ToList();
-        DllAnalizerConfig config= new DllAnalizerConfig() { CheckStore = true, CheckSignature = true };
+        DllAnalizerConfig config = new DllAnalizerConfig() { CheckStore = true, CheckSignature = true };
+        var analyzer = new DllAnalizerService();
 
         foreach (var filePath in allFiles)
         {
-            var analysis = DllAnalizerService.AnalizeDll(filePath, config);
+            var analysis = analyzer.AnalizeDll(filePath, config);
             if (analysis != null)
             {
                 if (analysis.StoreType != StoreType.Other && detectedStore == null)
@@ -66,10 +67,17 @@ public class PathManager
                     config.CheckStore = false;
                 }
 
-                results.Add(new GameDll()
+                results.Add(new GameDll
                 {
                     RelativePath = Path.GetRelativePath(path, filePath),
-                    Role = analysis.Role ?? DllRole.GenericFix,
+                    Role         = analysis.Role ?? DllRole.Unknown,
+                    Configs      = analysis.ConfigFiles
+                        .Select(cf => new GameDllConfig
+                        {
+                            FileName     = Path.GetFileName(cf),
+                            RelativePath = Path.GetRelativePath(path, cf),
+                        })
+                        .ToList()
                 });
 
                 if (analysis.Role == DllRole.Original)
