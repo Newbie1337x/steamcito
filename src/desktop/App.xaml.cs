@@ -38,6 +38,7 @@ namespace steamcito
             // Services
             services.AddSingleton<GameService>();
             services.AddSingleton<PathManager>();
+            services.AddSingleton<ISteamApiService, SteamApiService>();
             services.AddSingleton<SteamService>();
             services.AddSingleton<GameSessionManager>();
             services.AddSingleton<IEightBitFiestaService, EightBitFiestaService>();

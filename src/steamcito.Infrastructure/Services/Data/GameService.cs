@@ -52,6 +52,9 @@ public class GameService
         if (existing != null)
         {
             existing.Details.Title = game.Details.Title;
+            existing.Details.Description = game.Details.Description;
+            existing.Details.ReleaseDate = game.Details.ReleaseDate;
+
             if (existing.GamePaths != null && game.GamePaths != null)
             {
                 existing.GamePaths.FolderPath = game.GamePaths.FolderPath;

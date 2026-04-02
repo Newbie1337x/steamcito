@@ -71,7 +71,7 @@ public class SteamService
         return libraries;
     }
 
-    public void ScanAndSaveSteamGames()
+    public async Task ScanAndSaveSteamGamesAsync()
     {
         if (!IsSteamInstalled())
             return;
@@ -95,7 +95,7 @@ public class SteamService
             {
                 try
                 {
-                    var game = GetGameFromManifest(manifest, library);
+                    var game = await GetGameFromManifestAsync(manifest, library);
 
                     if (game != null)
                     {
@@ -107,7 +107,7 @@ public class SteamService
         }
     }
 
-    private Game? GetGameFromManifest(string manifestPath, string libraryPath)
+    private async Task<Game?> GetGameFromManifestAsync(string manifestPath, string libraryPath)
     {
         var lines = File.ReadAllLines(manifestPath);
 
@@ -136,7 +136,7 @@ public class SteamService
 
         if (string.IsNullOrEmpty(appId))
             return null;
-
+        
         var game = new Game
         {
             LaunchMode = LaunchMode.Store,
@@ -169,7 +169,7 @@ public class SteamService
         var artwork = new Artwork
         {
             Game = game,
-            Grid = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/library_600x900_2x.jpg",
+            Grid = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/library_600x900_2x.jpg"?? $"https://steamcdn-a.akamaihd.net/steam/apps/491540/header.jpg",
             Hero = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/library_hero.jpg",
             Logo = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/logo.png",
             Icon = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/header.jpg"

@@ -65,9 +65,9 @@ public partial class MainWindowModel : ObservableObject
         WeakReferenceMessenger.Default.Send(new GameAddedMessage(nuevoJuego)); }
 
     [RelayCommand]
-    private void ScanSteamGames()
+    private async Task ScanSteamGames()
     {
-        _steamService.ScanAndSaveSteamGames();
+        await _steamService.ScanAndSaveSteamGamesAsync();
         WeakReferenceMessenger.Default.Send(new GamesReloadedMessage());
     }
 }

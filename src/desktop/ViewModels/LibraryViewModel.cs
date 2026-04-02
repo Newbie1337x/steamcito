@@ -20,14 +20,71 @@ namespace steamcito.ViewModels
         private readonly IEightBitFiestaService _eightBitFiestaService;
         
         [ObservableProperty] private ObservableCollection<Game> _games = new();
-        [ObservableProperty] private Game? _selectedGame;
+        private Game? _selectedGame;
+        public Game? SelectedGame
+        {
+            get => _selectedGame;
+            set
+            {
+                if (SetProperty(ref _selectedGame, value))
+                {
+                    OnSelectedGameChanged(value);
+                }
+            }
+        }
+
+        private async void OnSelectedGameChanged(Game? game)
+        {
+            if (game?.Details?.SteamId != null)
+            {
+                if (string.IsNullOrEmpty(game.Details.Description))
+                {
+                    await UpdateSteamGameDetailsAsync(game);
+                }
+            }
+        }
+
+        private async Task UpdateSteamGameDetailsAsync(Game game)
+        {
+            if (_steamApiService == null || string.IsNullOrEmpty(game.Details.SteamId)) return;
+
+            var apiData = await _steamApiService.GetAppDetailsAsync(game.Details.SteamId);
+            if (apiData != null)
+            {
+                game.Details.Title = apiData.Name ?? game.Details.Title;
+                game.Details.Description = apiData.ShortDescription?? apiData.DetailedDescription;
+                
+                if (apiData.ReleaseDate != null && !string.IsNullOrEmpty(apiData.ReleaseDate.Date))
+                {
+                    if (DateTime.TryParse(apiData.ReleaseDate.Date, out var releaseDate))
+                    {
+                        game.Details.ReleaseDate = releaseDate;
+                    }
+                }
+
+                if (apiData.Genres != null)
+                {
+                    game.Details.Genres = apiData.Genres.Select(g => new Genre(g.Description ?? "Unknown")).ToList();
+                }
+                
+                game.Artworks.Grid = apiData.HeaderImage ?? game.Artworks.Grid;
+                game.Artworks.Hero = apiData.Background ?? game.Artworks.Hero;
+
+                _gameService.Update(game);
+                
+                OnPropertyChanged(nameof(SelectedGame));
+            }
+        }
+
+        private readonly ISteamApiService? _steamApiService;
         
-        public LibraryViewModel(GameService gameService, GameSessionManager gameSessionManager, PathManager pathManager, IEightBitFiestaService eightBitFiestaService)
+        public LibraryViewModel(GameService gameService, GameSessionManager gameSessionManager, PathManager pathManager, IEightBitFiestaService eightBitFiestaService, ISteamApiService steamApiService)
         {
             _gameService = gameService;
             _gameSessionManager = gameSessionManager;
             _pathManager = pathManager;
             _eightBitFiestaService = eightBitFiestaService;
+            _steamApiService = steamApiService;
             LoadGames();
             WeakReferenceMessenger.Default.Register<GameAddedMessage>(this);
             WeakReferenceMessenger.Default.Register<GamesReloadedMessage>(this);
