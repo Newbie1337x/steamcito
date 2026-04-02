@@ -192,7 +192,7 @@
                 
                 <StackPanel>
                     <Grid x:Name="BannerArea" Height="300" Background="#10141B">
-                        <Image Source="{Binding SelectedGame.Artworks.Grid}" Stretch="UniformToFill"/>
+                        <Image Source="{Binding SelectedGame.Artworks.Hero}" Stretch="UniformToFill"/>
                         <Rectangle>
                             <Rectangle.Fill>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">

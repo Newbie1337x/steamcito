@@ -67,7 +67,6 @@ namespace steamcito.ViewModels
                     game.Details.Genres = apiData.Genres.Select(g => new Genre(g.Description ?? "Unknown")).ToList();
                 }
                 
-                game.Artworks.Grid = apiData.HeaderImage ?? game.Artworks.Grid;
                 game.Artworks.Hero = apiData.Background ?? game.Artworks.Hero;
 
                 _gameService.Update(game);
