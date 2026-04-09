@@ -53,6 +53,7 @@ namespace steamcito.ViewModels
             {
                 game.Details.Title = apiData.Name ?? game.Details.Title;
                 game.Details.Description = apiData.ShortDescription?? apiData.DetailedDescription;
+                game.Details.RemotePlayTogether = (apiData.Categories?.Find(c => c.Description == "Remote Play Together" || c.Description == "Pantalla partida/compartida") != null);
                 
                 if (apiData.ReleaseDate != null && !string.IsNullOrEmpty(apiData.ReleaseDate.Date))
                 {

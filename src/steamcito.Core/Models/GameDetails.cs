@@ -18,9 +18,9 @@ public partial class GameDetails : ObservableObject
     public string? IgdbId { get; set; }
     public List<Genre> Genres { get; set; } = new();
     
-
+    public bool RemotePlayTogether  { get; set; } = false;
     public bool Favorite { get; set; } = false;
-
+    
     public string? Title { get; set; }
     public string? Description { get; set; }
     public DateTime? ReleaseDate { get; set; }
