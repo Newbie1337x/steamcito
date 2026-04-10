@@ -4,7 +4,9 @@ using steamcito.Models;
 using File = System.IO.File;
 using steamcito.Models.Dtos;
 using steamcito.Models.Enum;
-namespace steamcito.Services;
+using steamcito.Services;
+
+namespace steamcito.Infrastructure.Services;
 
 public class PathManager
 {

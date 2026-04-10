@@ -2,10 +2,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using steamcito.Services;
+using steamcito.Infrastructure.Services;
 using steamcito.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using steamcito.Views;
 using steamcito.Core.Interfaces;
 using Application = System.Windows.Application;
@@ -18,6 +18,7 @@ namespace steamcito.ViewModels
         private readonly GameSessionManager _gameSessionManager;
         private readonly PathManager _pathManager;
         private readonly IEightBitFiestaService _eightBitFiestaService;
+        private readonly SteamService _steamService;
         
         [ObservableProperty] private ObservableCollection<Game> _games = new();
         private Game? _selectedGame;
@@ -39,52 +40,19 @@ namespace steamcito.ViewModels
             {
                 if (string.IsNullOrEmpty(game.Details.Description))
                 {
-                    await UpdateSteamGameDetailsAsync(game);
+                    await _steamService.UpdateSteamGameDetailsAsync(game);
+                    OnPropertyChanged(nameof(SelectedGame));
                 }
             }
         }
 
-        private async Task UpdateSteamGameDetailsAsync(Game game)
-        {
-            if (_steamApiService == null || string.IsNullOrEmpty(game.Details.SteamId)) return;
-
-            var apiData = await _steamApiService.GetAppDetailsAsync(game.Details.SteamId);
-            if (apiData != null)
-            {
-                game.Details.Title = apiData.Name ?? game.Details.Title;
-                game.Details.Description = apiData.ShortDescription?? apiData.DetailedDescription;
-                game.Details.RemotePlayTogether = (apiData.Categories?.Find(c => c.Description == "Remote Play Together" || c.Description == "Pantalla partida/compartida") != null);
-                
-                if (apiData.ReleaseDate != null && !string.IsNullOrEmpty(apiData.ReleaseDate.Date))
-                {
-                    if (DateTime.TryParse(apiData.ReleaseDate.Date, out var releaseDate))
-                    {
-                        game.Details.ReleaseDate = releaseDate;
-                    }
-                }
-
-                if (apiData.Genres != null)
-                {
-                    game.Details.Genres = apiData.Genres.Select(g => new Genre(g.Description ?? "Unknown")).ToList();
-                }
-                
-                game.Artworks.Hero = apiData.Background ?? game.Artworks.Hero;
-
-                _gameService.Update(game);
-                
-                OnPropertyChanged(nameof(SelectedGame));
-            }
-        }
-
-        private readonly ISteamApiService? _steamApiService;
-        
-        public LibraryViewModel(GameService gameService, GameSessionManager gameSessionManager, PathManager pathManager, IEightBitFiestaService eightBitFiestaService, ISteamApiService steamApiService)
+        public LibraryViewModel(GameService gameService, GameSessionManager gameSessionManager, PathManager pathManager, IEightBitFiestaService eightBitFiestaService, SteamService steamService)
         {
             _gameService = gameService;
             _gameSessionManager = gameSessionManager;
             _pathManager = pathManager;
             _eightBitFiestaService = eightBitFiestaService;
-            _steamApiService = steamApiService;
+            _steamService = steamService;
             LoadGames();
             WeakReferenceMessenger.Default.Register<GameAddedMessage>(this);
             WeakReferenceMessenger.Default.Register<GamesReloadedMessage>(this);
@@ -151,7 +119,7 @@ namespace steamcito.ViewModels
             if (game.GamePaths?.ExeRelativePath == null )
                 return;
             
-           _pathManager.CreateShortcut(game.GamePaths.ExeFullPath, game.Details.Title);
+            _pathManager.CreateShortcut(game.GamePaths.ExeFullPath, game.Details.Title);
         }
 
         [RelayCommand]

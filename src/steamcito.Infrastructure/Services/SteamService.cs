@@ -3,18 +3,22 @@ using Microsoft.Win32;
 using System.IO;
 using steamcito.Models;
 using steamcito.Models.Enum;
+using steamcito.Services;
+using steamcito.Core.Interfaces;
 
-namespace steamcito.Services;
+namespace steamcito.Infrastructure.Services;
 
 public class SteamService
 {
     private readonly string? _steamPath;
     private readonly GameService _gameService;
+    private ISteamApiService _steamApiService;
 
-    public SteamService(GameService gameService)
+    public SteamService(GameService gameService, ISteamApiService steamApiService)
     {
         _steamPath = GetSteamPathFromRegistry();
         _gameService = gameService;
+        _steamApiService = steamApiService;
     }
 
     public string? GetSteamPathFromRegistry()
@@ -107,6 +111,36 @@ public class SteamService
         }
     }
 
+    public async Task UpdateSteamGameDetailsAsync(Game game)
+    {
+        if (string.IsNullOrEmpty(game.Details.SteamId)) return;
+
+        var apiData = await _steamApiService.GetAppDetailsAsync(game.Details.SteamId);
+        if (apiData != null)
+        {
+            game.Details.Title = apiData.Name ?? game.Details.Title;
+            game.Details.Description = apiData.ShortDescription?? apiData.DetailedDescription;
+            game.Details.RemotePlayTogether = (apiData.Categories?.Find(c => c.Description == "Remote Play Together" || c.Description == "Pantalla partida/compartida") != null);
+                
+            if (apiData.ReleaseDate != null && !string.IsNullOrEmpty(apiData.ReleaseDate.Date))
+            {
+                if (DateTime.TryParse((string)apiData.ReleaseDate.Date, out var releaseDate))
+                {
+                    game.Details.ReleaseDate = releaseDate;
+                }
+            }
+
+            if (apiData.Genres != null)
+            {
+                game.Details.Genres = apiData.Genres.Select(g => new Genre(g.Description ?? "Unknown")).ToList();
+            }
+                
+            game.Artworks.Hero = apiData.Background ?? game.Artworks.Hero;
+
+            _gameService.Update(game);
+        }
+    }
+
     private async Task<Game?> GetGameFromManifestAsync(string manifestPath, string libraryPath)
     {
         var lines = File.ReadAllLines(manifestPath);
@@ -169,7 +203,7 @@ public class SteamService
         var artwork = new Artwork
         {
             Game = game,
-            Grid = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/library_600x900_2x.jpg"?? $"https://steamcdn-a.akamaihd.net/steam/apps/491540/header.jpg",
+            Grid = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/library_600x900_2x.jpg",
             Hero = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/library_hero.jpg",
             Logo = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/logo.png",
             Icon = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/header.jpg"

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using steamcito.Core.Interfaces;
 using steamcito.Data;
+using steamcito.Infrastructure.Services;
 using steamcito.Integrations.EightBitFiesta;
 using steamcito.Services;
 using steamcito.ViewModels;

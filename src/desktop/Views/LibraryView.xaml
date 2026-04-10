@@ -328,6 +328,25 @@
                             </Style>
                         </Button.Resources>
                     </Button>
+                    
+                    <Button FontSize="25"
+                            Width="45"
+                            Height="45"
+                            Margin="0,0"
+                            Padding="0"
+                            Background="#3d4450"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Command="{Binding OpenPropertiesCommand}"
+                            CommandParameter="{Binding SelectedGame}">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="9"/>
+                            </Style>
+                        </Button.Resources>
+                        <TextBlock Text="🎮" Margin="0,-5,0,0"/>
+                    </Button>
                 </StackPanel>
             </Border>
         </Grid>

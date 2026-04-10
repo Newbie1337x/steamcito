@@ -4,7 +4,7 @@ using steamcito.Models;
 using steamcito.Models.Enum;
 using Timer = System.Timers.Timer;
 
-namespace steamcito.Services;
+namespace steamcito.Infrastructure.Services;
 
 public class GameSessionManager
 {

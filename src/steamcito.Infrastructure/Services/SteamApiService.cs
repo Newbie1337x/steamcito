@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using steamcito.Models.Dtos;
 
-namespace steamcito.Services;
+namespace steamcito.Infrastructure.Services;
 
 public interface ISteamApiService
 {
