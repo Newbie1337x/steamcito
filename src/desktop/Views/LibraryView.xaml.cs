@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using steamcito.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Button = System.Windows.Controls.Button;
 
 namespace steamcito.Views
 {

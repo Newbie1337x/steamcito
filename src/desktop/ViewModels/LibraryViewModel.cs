@@ -19,6 +19,7 @@ namespace steamcito.ViewModels
         private readonly PathManager _pathManager;
         private readonly IEightBitFiestaService _eightBitFiestaService;
         private readonly SteamService _steamService;
+        public bool ShowButton { get; set; }
         
         [ObservableProperty] private ObservableCollection<Game> _games = new();
         private Game? _selectedGame;
@@ -36,13 +37,15 @@ namespace steamcito.ViewModels
 
         private async void OnSelectedGameChanged(Game? game)
         {
-            if (game?.Details?.SteamId != null)
+            ShowButton = game?.Details?.RemotePlayTogether ?? false;
+            OnPropertyChanged(nameof(ShowButton));
+            
+            if (game?.Details?.SteamId != null && string.IsNullOrEmpty(game.Details.Description))
             {
-                if (string.IsNullOrEmpty(game.Details.Description))
-                {
-                    await _steamService.UpdateSteamGameDetailsAsync(game);
-                    OnPropertyChanged(nameof(SelectedGame));
-                }
+                await _steamService.UpdateSteamGameDetailsAsync(game);
+                ShowButton = game.Details.RemotePlayTogether;
+                OnPropertyChanged(nameof(ShowButton));
+                OnPropertyChanged(nameof(SelectedGame));
             }
         }
 
@@ -53,6 +56,8 @@ namespace steamcito.ViewModels
             _pathManager = pathManager;
             _eightBitFiestaService = eightBitFiestaService;
             _steamService = steamService;
+            ShowButton = false;
+            
             LoadGames();
             WeakReferenceMessenger.Default.Register<GameAddedMessage>(this);
             WeakReferenceMessenger.Default.Register<GamesReloadedMessage>(this);

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.IO;
+using System.Net.Http;
 using steamcito.Models;
 using steamcito.Models.Enum;
 using steamcito.Services;
@@ -119,9 +120,9 @@ public class SteamService
         if (apiData != null)
         {
             game.Details.Title = apiData.Name ?? game.Details.Title;
-            game.Details.Description = apiData.ShortDescription?? apiData.DetailedDescription;
-            game.Details.RemotePlayTogether = (apiData.Categories?.Find(c => c.Description == "Remote Play Together" || c.Description == "Pantalla partida/compartida") != null);
-                
+            game.Details.Description = apiData.ShortDescription ?? apiData.DetailedDescription;
+            game.Details.RemotePlayTogether = apiData.Categories?.Any(c => c.Id is 44 or 24 or 39 or 37) != null;
+
             if (apiData.ReleaseDate != null && !string.IsNullOrEmpty(apiData.ReleaseDate.Date))
             {
                 if (DateTime.TryParse((string)apiData.ReleaseDate.Date, out var releaseDate))
@@ -134,10 +135,93 @@ public class SteamService
             {
                 game.Details.Genres = apiData.Genres.Select(g => new Genre(g.Description ?? "Unknown")).ToList();
             }
-                
-            game.Artworks.Hero = apiData.Background ?? game.Artworks.Hero;
+            // Artworks caché logic
+            bool hasCachedArtworks = CheckArtworksCache(game.Details.SteamId);
+
+            if (!hasCachedArtworks)
+            {
+                await DownloadAndCacheArtworks(game.Details.SteamId, game.Artworks);
+            }
+            else
+            {
+                UpdateArtworksFromCache(game.Details.SteamId, game.Artworks);
+            }
 
             _gameService.Update(game);
+        }
+    }
+
+    private bool CheckArtworksCache(string appId)
+    {
+        var cachePath = GetArtworksCachePath(appId);
+        return Directory.Exists(cachePath) && Directory.GetFiles(cachePath).Length > 0;
+    }
+
+    private string GetArtworksCachePath(string appId)
+    {
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Steamcito",
+            "Cache",
+            "Artworks",
+            appId
+        );
+    }
+
+    private async Task DownloadAndCacheArtworks(string appId, Artwork artworks)
+    {
+        var cachePath = GetArtworksCachePath(appId);
+        if (!Directory.Exists(cachePath)) Directory.CreateDirectory(cachePath);
+
+        using var client = new HttpClient();
+
+        var files = new Dictionary<string, string>
+        {
+            { "grid", $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/library_600x900_2x.jpg" },
+            { "hero", $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/library_hero.jpg" },
+            { "logo", $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/logo.png" },
+            { "icon", $"https://cdn.cloudflare.steamstatic.com/steam/apps/{appId}/header.jpg" }
+        };
+
+        foreach (var file in files)
+        {
+            try
+            {
+                var extension = Path.GetExtension(file.Value).Split('?')[0];
+                if (string.IsNullOrEmpty(extension)) extension = ".jpg";
+                var localPath = Path.Combine(cachePath, $"{file.Key}{extension}");
+
+                var data = await client.GetByteArrayAsync(file.Value);
+                await File.WriteAllBytesAsync(localPath, data);
+
+                switch (file.Key)
+                {
+                    case "grid": artworks.Grid = localPath; break;
+                    case "hero": artworks.Hero = localPath; break;
+                    case "logo": artworks.Logo = localPath; break;
+                    case "icon": artworks.Icon = localPath; break;
+                }
+            }
+            catch { /* Ignorar errores de descarga individual */ }
+        }
+    }
+
+    private void UpdateArtworksFromCache(string appId, Artwork artworks)
+    {
+        var cachePath = GetArtworksCachePath(appId);
+        if (!Directory.Exists(cachePath)) return;
+
+        var files = Directory.GetFiles(cachePath);
+        foreach (var file in files)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(file).ToLower();
+            switch (fileName)
+            {
+                case "grid": artworks.Grid = file; break;
+                case "hero": artworks.Hero = file; break;
+                case "logo": artworks.Logo = file; break;
+                case "icon": artworks.Icon = file; break;
+            }
         }
     }
 

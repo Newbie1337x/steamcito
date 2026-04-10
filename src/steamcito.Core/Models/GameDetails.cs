@@ -18,12 +18,20 @@ public partial class GameDetails : ObservableObject
     public string? IgdbId { get; set; }
     public List<Genre> Genres { get; set; } = new();
     
-    public bool RemotePlayTogether  { get; set; } = false;
-    public bool Favorite { get; set; } = false;
+    [ObservableProperty]
+    private bool _remotePlayTogether = false;
     
-    public string? Title { get; set; }
-    public string? Description { get; set; }
-    public DateTime? ReleaseDate { get; set; }
+    [ObservableProperty]
+    private bool _favorite = false;
+    
+    [ObservableProperty]
+    private string? _title;
+    
+    [ObservableProperty]
+    private string? _description;
+    
+    [ObservableProperty]
+    private DateTime? _releaseDate;
     [ObservableProperty] 
     private TimeSpan _playTime;
     [ObservableProperty]
